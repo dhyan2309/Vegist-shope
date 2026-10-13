@@ -2,6 +2,7 @@ __pycache__/
 *.py[cod]
 *$py.class
 staticfiles/
+staticfiles_build/
 .env
 .venv/
 venv/
