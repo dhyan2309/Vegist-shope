@@ -1,0 +1,142 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Customer Orders{% endblock %}
+{% block page_title %}<i class="ri-file-list-3-fill" style="color: var(--primary);"></i> Customer Orders Management{% endblock %}
+
+{% block content %}
+<!-- Search & Status Filter Toolbar -->
+<div class="dash-card" style="padding: 1.25rem 1.5rem; margin-bottom: 1.5rem;">
+  <!-- Quick Status Filter Pills -->
+  <div class="status-filter-nav">
+    <a href="{% url 'dashboard:orders_list' %}{% if selected_q %}?q={{ selected_q }}{% endif %}" class="status-pill-btn {% if not selected_status %}active{% endif %}">
+      <span>All Orders</span>
+      <span class="pill-count">{{ status_counts.all }}</span>
+    </a>
+    <a href="{% url 'dashboard:orders_list' %}?status=pending{% if selected_q %}&q={{ selected_q }}{% endif %}" class="status-pill-btn {% if selected_status == 'pending' %}active{% endif %}">
+      <span style="color: #b45309;">●</span>
+      <span>Pending</span>
+      <span class="pill-count">{{ status_counts.pending }}</span>
+    </a>
+    <a href="{% url 'dashboard:orders_list' %}?status=processing{% if selected_q %}&q={{ selected_q }}{% endif %}" class="status-pill-btn {% if selected_status == 'processing' %}active{% endif %}">
+      <span style="color: #0369a1;">●</span>
+      <span>Processing</span>
+      <span class="pill-count">{{ status_counts.processing }}</span>
+    </a>
+    <a href="{% url 'dashboard:orders_list' %}?status=shipped{% if selected_q %}&q={{ selected_q }}{% endif %}" class="status-pill-btn {% if selected_status == 'shipped' %}active{% endif %}">
+      <span style="color: #6d28d9;">●</span>
+      <span>Shipped</span>
+      <span class="pill-count">{{ status_counts.shipped }}</span>
+    </a>
+    <a href="{% url 'dashboard:orders_list' %}?status=delivered{% if selected_q %}&q={{ selected_q }}{% endif %}" class="status-pill-btn {% if selected_status == 'delivered' %}active{% endif %}">
+      <span style="color: #15803d;">●</span>
+      <span>Delivered</span>
+      <span class="pill-count">{{ status_counts.delivered }}</span>
+    </a>
+    <a href="{% url 'dashboard:orders_list' %}?status=cancelled{% if selected_q %}&q={{ selected_q }}{% endif %}" class="status-pill-btn {% if selected_status == 'cancelled' %}active{% endif %}">
+      <span style="color: #b91c1c;">●</span>
+      <span>Cancelled</span>
+      <span class="pill-count">{{ status_counts.cancelled }}</span>
+    </a>
+  </div>
+
+  <form method="GET" style="display: flex; gap: 1rem; align-items: center; flex-wrap: wrap;">
+    <div style="position: relative; min-width: 280px; flex: 1;">
+      <input type="text" name="q" value="{{ selected_q }}" placeholder="Search by Order #, Customer Name, Email, Phone..." style="width: 100%; padding: 0.6rem 0.75rem 0.6rem 2.2rem; border: 1px solid var(--gray-200); border-radius: var(--radius); font-size: 0.88rem;">
+      <i class="ri-search-line" style="position: absolute; left: 0.75rem; top: 50%; transform: translateY(-50%); color: var(--gray-400);"></i>
+    </div>
+
+    <input type="hidden" name="status" value="{{ selected_status }}">
+
+    <button type="submit" class="btn btn-primary" style="padding: 0.6rem 1.25rem; font-size: 0.88rem; border-radius: var(--radius);">
+      <i class="ri-search-line"></i> Search Orders
+    </button>
+
+    {% if selected_q or selected_status %}
+      <a href="{% url 'dashboard:orders_list' %}" style="font-size: 0.85rem; color: var(--danger); text-decoration: underline; font-weight: 700;">Reset Filters</a>
+    {% endif %}
+  </form>
+</div>
+
+<!-- Orders Table Card -->
+<div class="dash-card">
+  <div class="dash-card-header">
+    <div class="dash-card-title">
+      <span>
+        {% if selected_status %}
+          {{ selected_status|capfirst }} Orders
+        {% else %}
+          All Orders
+        {% endif %}
+        ({{ total_count }})
+      </span>
+    </div>
+  </div>
+
+  {% if orders %}
+    <div style="overflow-x: auto;">
+      <table class="dash-table">
+        <thead>
+          <tr>
+            <th>Order #</th>
+            <th>Customer</th>
+            <th>Placed On</th>
+            <th>Items</th>
+            <th>Payment</th>
+            <th>Total Amount</th>
+            <th>Status</th>
+            <th style="text-align: right;">Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for o in orders %}
+            <tr>
+              <td style="font-weight: 800; color: var(--dark);">
+                #{{ o.order_number }}
+              </td>
+              <td>
+                <div style="font-weight: 700; color: var(--dark);">{{ o.first_name }} {{ o.last_name }}</div>
+                <div style="font-size: 0.78rem; color: var(--gray-500);">{{ o.phone }} | {{ o.email }}</div>
+              </td>
+              <td style="color: var(--gray-600); font-size: 0.85rem;">
+                {{ o.created_at|date:"M d, Y" }}
+                <div style="font-size: 0.75rem; color: var(--gray-400);">{{ o.created_at|time:"H:i" }}</div>
+              </td>
+              <td>
+                <span style="font-weight: 700; background: var(--gray-100); padding: 0.2rem 0.5rem; border-radius: 4px; font-size: 0.85rem;">
+                  {{ o.items.count }} items
+                </span>
+              </td>
+              <td>
+                <div style="font-weight: 700; font-size: 0.82rem; text-transform: uppercase;">{{ o.payment_method }}</div>
+                {% if o.is_paid %}
+                  <span style="font-size: 0.72rem; color: #15803d; font-weight: 800;"><i class="ri-checkbox-circle-fill"></i> Paid</span>
+                {% else %}
+                  <span style="font-size: 0.72rem; color: #b45309; font-weight: 800;"><i class="ri-time-line"></i> Unpaid</span>
+                {% endif %}
+              </td>
+              <td>
+                <div style="font-weight: 800; color: var(--primary); font-size: 1rem;">₹{{ o.total }}</div>
+              </td>
+              <td>
+                <span class="status-badge status-{{ o.status }}">
+                  {{ o.get_status_display }}
+                </span>
+              </td>
+              <td style="text-align: right;">
+                <a href="{% url 'dashboard:order_detail' o.order_number %}" class="btn btn-primary" style="padding: 0.4rem 0.85rem; font-size: 0.82rem; border-radius: 6px; text-decoration: none;">
+                  Manage &rarr;
+                </a>
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  {% else %}
+    <div style="text-align: center; padding: 4rem 1rem; color: var(--gray-500);">
+      <i class="ri-inbox-line" style="font-size: 3rem; color: var(--gray-300); margin-bottom: 0.5rem; display: block;"></i>
+      No orders match the selected criteria.
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

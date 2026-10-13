@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Deals of the Day & Flash Sales - Vegist Organic{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2.5rem; padding-bottom: 5rem;">
+  <div class="section-title-wrap">
+    <div>
+      <h1 class="section-title">
+        <i class="ri-flashlight-fill" style="color: var(--accent);"></i> Daily Organic Deals
+      </h1>
+      <p class="section-subtitle">Exclusive limited-harvest discounts of up to 40% OFF</p>
+    </div>
+  </div>
+
+  <div class="product-grid">
+    {% for product in deal_products %}
+      <div class="product-card">
+        <div class="product-thumb-wrap">
+          <span class="product-badge badge-danger">
+            {{ product.badge|default:"FLASH DEAL" }}
+          </span>
+
+          <div class="product-card-actions">
+            <button type="button" class="action-btn-circle js-toggle-wishlist {% if product.id in wishlist_ids %}active{% endif %}" data-product-id="{{ product.id }}" title="Wishlist">
+              <i class="{% if product.id in wishlist_ids %}ri-heart-fill{% else %}ri-heart-line{% endif %}"></i>
+            </button>
+            <button type="button" class="action-btn-circle js-quick-view" data-product-id="{{ product.id }}" title="Quick View">
+              <i class="ri-eye-line"></i>
+            </button>
+          </div>
+
+          <a href="{{ product.get_absolute_url }}">
+            {% if product.image %}
+              <img src="{{ product.image.url }}" alt="{{ product.name }}">
+            {% else %}
+              <img src="{% static 'images/cat_vegetables.jpg' %}" alt="{{ product.name }}">
+            {% endif %}
+          </a>
+        </div>
+
+        <div class="product-body">
+          <a href="{{ product.category.get_absolute_url }}" class="product-category-tag">{{ product.category.name }}</a>
+          <h3 class="product-title">
+            <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+          </h3>
+
+          <div class="product-rating">
+            <div class="stars">
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-fill"></i>
+              <i class="ri-star-half-fill"></i>
+            </div>
+            <span class="rating-count">({{ product.reviews_count }})</span>
+          </div>
+
+          <span class="product-unit-badge">{{ product.unit }}</span>
+
+          <div class="product-footer">
+            <div class="product-prices">
+              <span class="product-price">₹{{ product.price }}</span>
+              {% if product.old_price %}
+                <span class="product-old-price">₹{{ product.old_price }}</span>
+              {% endif %}
+            </div>
+            <button type="button" class="add-cart-btn js-add-to-cart" data-product-id="{{ product.id }}">
+              <i class="ri-add-line"></i> Add
+            </button>
+          </div>
+        </div>
+      </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}

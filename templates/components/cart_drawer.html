@@ -1,0 +1,83 @@
+{% load static %}
+<!-- Cart Drawer Overlay -->
+<div id="cart-drawer-overlay" class="cart-drawer-overlay"></div>
+
+<!-- Slide-in Cart Drawer -->
+<div id="cart-drawer" class="cart-drawer">
+  <!-- Header -->
+  <div class="cart-drawer-header">
+    <h3 class="cart-drawer-title">
+      <i class="ri-shopping-basket-2-fill" style="color: var(--primary);"></i>
+      <span>My Farm Basket</span>
+      <span style="font-size: 0.95rem; color: var(--gray-500); font-weight: 500;">(<span id="cart-drawer-count">{{ cart_item_count|default:"0" }}</span>)</span>
+    </h3>
+    <button type="button" class="cart-drawer-close js-close-cart" title="Close Cart">
+      <i class="ri-close-line"></i>
+    </button>
+  </div>
+
+  <!-- Free Shipping Progress Tracker -->
+  <div class="cart-shipping-bar">
+    <div id="cart-shipping-message" class="cart-shipping-text">
+      {% if free_shipping_remaining <= 0 and cart_subtotal > 0 %}
+        <strong style="color: var(--primary);"><i class="ri-checkbox-circle-fill"></i> Congratulations! You unlocked FREE SHIPPING!</strong>
+      {% else %}
+        Add <strong>₹{{ free_shipping_remaining|default:"499.00" }}</strong> more to get <strong>FREE SHIPPING</strong>!
+      {% endif %}
+    </div>
+    <div class="cart-shipping-track">
+      <div id="cart-shipping-progress-fill" class="cart-shipping-fill" style="width: {{ free_shipping_progress|default:0 }}%;"></div>
+    </div>
+  </div>
+
+  <!-- Items List Container -->
+  <div id="cart-drawer-items-list" class="cart-drawer-items">
+    {% for item in cart %}
+      <div class="cart-item-row" data-product-id="{{ item.product.id }}">
+        <div class="cart-item-thumb">
+          {% if item.product.image %}
+            <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+          {% else %}
+            <img src="{% static 'images/cat_vegetables.jpg' %}" alt="{{ item.product.name }}">
+          {% endif %}
+        </div>
+        <div class="cart-item-info">
+          <a href="{{ item.product.get_absolute_url }}" class="cart-item-name">{{ item.product.name }}</a>
+          <div class="cart-item-meta">{{ item.product.unit }} | ₹{{ item.price }}</div>
+          <div class="cart-qty-stepper">
+            <button type="button" class="qty-btn" onclick="updateItemQty({{ item.product.id }}, 'decrement')"><i class="ri-subtract-line"></i></button>
+            <span class="qty-val">{{ item.quantity }}</span>
+            <button type="button" class="qty-btn" onclick="updateItemQty({{ item.product.id }}, 'increment')"><i class="ri-add-line"></i></button>
+          </div>
+        </div>
+        <button type="button" class="cart-item-remove-btn" title="Remove" onclick="removeItemFromCart({{ item.product.id }})">
+          <i class="ri-delete-bin-line"></i>
+        </button>
+      </div>
+    {% empty %}
+      <div style="text-align: center; padding: 3rem 1rem;">
+        <div style="font-size: 3.5rem; color: #cbd5e1; margin-bottom: 1rem;"><i class="ri-shopping-basket-line"></i></div>
+        <h4 style="font-size: 1.15rem; color: #0f172a; margin-bottom: 0.5rem;">Your Cart is Empty</h4>
+        <p style="font-size: 0.875rem; color: #64748b; margin-bottom: 1.5rem;">Explore our fresh organic harvest and add items to your cart!</p>
+        <a href="{% url 'store:shop' %}" class="btn btn-primary" onclick="closeCartDrawer()">Start Shopping</a>
+      </div>
+    {% endfor %}
+  </div>
+
+  <!-- Cart Footer -->
+  <div id="cart-drawer-footer" class="cart-drawer-footer" {% if cart_item_count == 0 %}style="display:none;"{% endif %}>
+    <div class="cart-subtotal-row">
+      <span>Subtotal:</span>
+      <span id="cart-drawer-subtotal" style="color: var(--primary);">₹{{ cart_subtotal|default:"0.00" }}</span>
+    </div>
+    <p style="font-size: 0.8rem; color: var(--gray-500); margin-bottom: 1rem;">Taxes and shipping calculated at checkout.</p>
+    <div class="cart-drawer-btn-group">
+      <a href="{% url 'cart:cart_detail' %}" class="btn btn-outline" style="border-color: var(--gray-300); color: var(--dark);">
+        <i class="ri-shopping-cart-2-line"></i> View Cart & Apply Promo
+      </a>
+      <a href="{% url 'orders:checkout' %}" class="btn btn-primary">
+        <i class="ri-lock-line"></i> Proceed to Checkout
+      </a>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,105 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Promo Coupons{% endblock %}
+{% block page_title %}<i class="ri-coupon-3-fill" style="color: var(--primary);"></i> Promo Coupons & Vouchers{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: start;">
+  <!-- Left: Coupons List -->
+  <div class="dash-card">
+    <div class="dash-card-header">
+      <div class="dash-card-title">
+        <span>Available Vouchers ({{ coupons.count }})</span>
+      </div>
+    </div>
+
+    <table class="dash-table">
+      <thead>
+        <tr>
+          <th>Coupon Code</th>
+          <th>Discount</th>
+          <th>Valid Until</th>
+          <th>Status</th>
+          <th style="text-align: right;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for c in coupons %}
+          <tr>
+            <td>
+              <div style="font-weight: 800; font-family: monospace; font-size: 1.05rem; color: var(--primary); letter-spacing: 1px;">
+                {{ c.code }}
+              </div>
+            </td>
+            <td>
+              <span style="font-weight: 800; background: #fef3c7; color: #b45309; padding: 0.2rem 0.55rem; border-radius: 4px; font-size: 0.85rem;">
+                {{ c.discount_percent }}% OFF
+              </span>
+            </td>
+            <td style="color: var(--gray-600); font-size: 0.85rem;">
+              {{ c.valid_to|date:"M d, Y" }}
+            </td>
+            <td>
+              {% if c.active %}
+                <span style="background: #dcfce7; color: #15803d; font-weight: 800; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px;">
+                  Active
+                </span>
+              {% else %}
+                <span style="background: var(--gray-200); color: var(--gray-600); font-weight: 700; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px;">
+                  Disabled
+                </span>
+              {% endif %}
+            </td>
+            <td style="text-align: right;">
+              <form action="{% url 'dashboard:coupon_toggle' c.id %}" method="POST" style="display: inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn" style="background: var(--gray-100); color: var(--dark); padding: 0.35rem 0.75rem; border-radius: 6px; font-size: 0.8rem; font-weight: 700; border: 1px solid var(--gray-200); cursor: pointer;">
+                  {% if c.active %}Disable{% else %}Enable{% endif %}
+                </button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Right: Add Coupon Form -->
+  <div class="dash-card">
+    <div class="dash-card-header">
+      <div class="dash-card-title">
+        <i class="ri-add-circle-fill" style="color: var(--primary);"></i>
+        <span>Create New Coupon</span>
+      </div>
+    </div>
+
+    <form method="POST">
+      {% csrf_token %}
+      <div style="margin-bottom: 1.25rem;">
+        <label style="display: block; font-weight: 700; font-size: 0.88rem; margin-bottom: 0.4rem;">
+          Coupon Code *
+        </label>
+        <input type="text" name="code" required placeholder="e.g. VEGIST25" style="width: 100%; padding: 0.65rem 0.85rem; border: 1px solid var(--gray-200); border-radius: var(--radius); font-size: 0.95rem; font-weight: 800; text-transform: uppercase;">
+      </div>
+
+      <div style="margin-bottom: 1.25rem;">
+        <label style="display: block; font-weight: 700; font-size: 0.88rem; margin-bottom: 0.4rem;">
+          Discount Percentage (%) *
+        </label>
+        <input type="number" name="discount_percent" min="1" max="100" value="15" required style="width: 100%; padding: 0.65rem 0.85rem; border: 1px solid var(--gray-200); border-radius: var(--radius); font-size: 0.95rem; font-weight: 700;">
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.9rem; font-weight: 600;">
+          <input type="checkbox" name="active" checked style="width: 18px; height: 18px; accent-color: var(--primary);">
+          <span>Activate Coupon Immediately</span>
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-weight: 800; border-radius: var(--radius);">
+        <i class="ri-check-line"></i> Save Voucher
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

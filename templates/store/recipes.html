@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Farm Kitchen Recipes & Living - Vegist Organic{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3rem; padding-bottom: 5rem;">
+  <div class="section-title-wrap">
+    <div>
+      <h1 class="section-title">Farm Kitchen & Recipes</h1>
+      <p class="section-subtitle">Delicious seasonal ways to prepare and enjoy your organic farm harvest</p>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2rem;">
+    <!-- Recipe 1 -->
+    <div style="background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
+      <div style="height: 220px; overflow: hidden;">
+        <img src="{% static 'images/hero_banner.jpg' %}" alt="Roasted Heirloom Vegetables" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+      <div style="padding: 1.5rem;">
+        <span style="font-size: 0.75rem; color: var(--primary); font-weight: 700; text-transform: uppercase;">Vegetarian • 25 Mins</span>
+        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--dark); margin: 0.35rem 0 0.75rem;">
+          Garlic Herb Roasted Romanesco & Baby Carrots
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--gray-600); line-height: 1.6; margin-bottom: 1.25rem;">
+          Toss crisp broccoli crowns and sweet baby carrots with extra virgin olive oil, smashed garlic, and fresh rosemary sprigs.
+        </p>
+        <a href="{% url 'store:shop_category' 'fresh-vegetables' %}" class="side-promo-link" style="color: var(--primary); border-bottom-color: var(--primary);">
+          Shop Required Produce <i class="ri-arrow-right-line"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Recipe 2 -->
+    <div style="background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
+      <div style="height: 220px; overflow: hidden;">
+        <img src="{% static 'images/promo_juice.jpg' %}" alt="Green Goddess Detox" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+      <div style="padding: 1.5rem;">
+        <span style="font-size: 0.75rem; color: var(--primary); font-weight: 700; text-transform: uppercase;">Raw Vegan • 10 Mins</span>
+        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--dark); margin: 0.35rem 0 0.75rem;">
+          Alkalizing Morning Green Goddess Smoothie
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--gray-600); line-height: 1.6; margin-bottom: 1.25rem;">
+          Blend tender baby spinach, buttery hass avocados, crisp green apples, and a squeeze of fresh lemon for a clean energy surge.
+        </p>
+        <a href="{% url 'store:shop_category' 'cold-pressed-juices' %}" class="side-promo-link" style="color: var(--primary); border-bottom-color: var(--primary);">
+          Shop Required Produce <i class="ri-arrow-right-line"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Recipe 3 -->
+    <div style="background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm);">
+      <div style="height: 220px; overflow: hidden;">
+        <img src="{% static 'images/cat_bakery.jpg' %}" alt="Artisan Bruschetta" style="width: 100%; height: 100%; object-fit: cover;">
+      </div>
+      <div style="padding: 1.5rem;">
+        <span style="font-size: 0.75rem; color: var(--primary); font-weight: 700; text-transform: uppercase;">Gourmet • 15 Mins</span>
+        <h3 style="font-size: 1.15rem; font-weight: 800; color: var(--dark); margin: 0.35rem 0 0.75rem;">
+          Wild Sourdough Heirloom Tomato Bruschetta
+        </h3>
+        <p style="font-size: 0.85rem; color: var(--gray-600); line-height: 1.6; margin-bottom: 1.25rem;">
+          Toast thick slices of stoneground sourdough, top with diced ruby vine tomatoes, torn fresh basil, and cultured sea salt butter.
+        </p>
+        <a href="{% url 'store:shop_category' 'artisan-bakery' %}" class="side-promo-link" style="color: var(--primary); border-bottom-color: var(--primary);">
+          Shop Required Produce <i class="ri-arrow-right-line"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

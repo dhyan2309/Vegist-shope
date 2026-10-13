@@ -1,0 +1,57 @@
+{% load static %}
+<!-- Quick View Modal -->
+<div id="quick-view-modal" class="modal-overlay">
+  <div class="modal-dialog">
+    <button type="button" class="modal-close-btn js-close-modal" onclick="closeQuickView()">
+      <i class="ri-close-line"></i>
+    </button>
+    <div class="modal-body">
+      <!-- Image Left -->
+      <div class="modal-image-wrap">
+        <img id="qv-image" src="{% static 'images/cat_vegetables.jpg' %}" alt="Product Image">
+      </div>
+
+      <!-- Info Right -->
+      <div class="modal-info">
+        <div id="qv-category" class="product-category-tag" style="margin-bottom: 0.5rem; font-size: 0.85rem;">Category</div>
+        <h2 id="qv-title" style="font-size: 1.6rem; margin-bottom: 0.75rem; color: var(--dark);">Product Title</h2>
+        
+        <div id="qv-stock" style="margin-bottom: 0.75rem; font-size: 0.875rem;">
+          <span style="color:#15803d; font-weight:700;"><i class="ri-checkbox-circle-fill"></i> In Stock</span>
+        </div>
+
+        <div class="product-prices" style="margin-bottom: 1rem; align-items: baseline; gap: 0.75rem;">
+          <span id="qv-price" style="font-size: 1.85rem; font-weight: 800; color: var(--primary);">₹0.00</span>
+          <span id="qv-old-price" style="font-size: 1.15rem; color: var(--gray-400); text-decoration: line-through;">₹0.00</span>
+        </div>
+
+        <div style="margin-bottom: 1rem;">
+          <span style="font-size: 0.85rem; color: var(--gray-500);">Pack Size:</span>
+          <span id="qv-unit" class="product-unit-badge" style="margin-left: 0.5rem;">1 kg</span>
+        </div>
+
+        <p id="qv-desc" style="font-size: 0.9rem; color: var(--gray-600); margin-bottom: 1.5rem; line-height: 1.6;">
+          Short product description goes here.
+        </p>
+
+        <!-- Add To Cart Form -->
+        <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 1.5rem;">
+          <div class="cart-qty-stepper" style="border: 2px solid var(--gray-200); padding: 0.2rem;">
+            <button type="button" class="qty-btn" onclick="let inp = document.getElementById('qv-qty-input'); inp.value = Math.max(1, parseInt(inp.value)-1);"><i class="ri-subtract-line"></i></button>
+            <input type="text" id="qv-qty-input" class="js-qty-input" data-product-id="" value="1" style="width: 40px; border: none; text-align: center; font-weight: 700; outline: none;">
+            <button type="button" class="qty-btn" onclick="let inp = document.getElementById('qv-qty-input'); inp.value = parseInt(inp.value)+1;"><i class="ri-add-line"></i></button>
+          </div>
+          <button type="button" id="qv-add-btn" class="btn btn-primary js-add-to-cart" data-product-id="" style="flex: 1;">
+            <i class="ri-shopping-basket-fill"></i> Add to Cart
+          </button>
+        </div>
+
+        <div>
+          <a id="qv-detail-link" href="#" class="side-promo-link" style="color: var(--primary); border-bottom-color: var(--primary);">
+            View Full Product Details & Nutritional Facts <i class="ri-arrow-right-line"></i>
+          </a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

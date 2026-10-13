@@ -1,0 +1,83 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Contact Customer Care - Vegist Organic Supermarket{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3rem; padding-bottom: 5rem; max-width: 960px;">
+  <div class="section-title-wrap" style="text-align: center; justify-content: center; flex-direction: column; align-items: center;">
+    <h1 class="section-title" style="margin-bottom: 0.5rem;">Get In Touch With Vegist</h1>
+    <p class="section-subtitle">We are here to answer any questions about our organic harvest and deliveries</p>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1fr 1.5fr; gap: 3rem; align-items: start; margin-top: 2rem;">
+    <!-- Info -->
+    <div style="background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); padding: 2rem; box-shadow: var(--shadow-sm);">
+      <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--dark); margin-bottom: 1.5rem;">Customer Care</h3>
+
+      <div style="display: flex; flex-direction: column; gap: 1.25rem; font-size: 0.95rem;">
+        <div style="display: flex; gap: 1rem; align-items: flex-start;">
+          <div style="width: 42px; height: 42px; border-radius: var(--radius-full); background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;">
+            <i class="ri-phone-fill"></i>
+          </div>
+          <div>
+            <div style="font-weight: 700; color: var(--dark);">Toll-Free Helpline</div>
+            <div style="color: var(--gray-600);">+1 (800) 555-VEGI (8344)</div>
+            <span style="font-size: 0.75rem; color: var(--primary); font-weight: 600;">Mon - Sat (7 AM - 9 PM EST)</span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: flex-start;">
+          <div style="width: 42px; height: 42px; border-radius: var(--radius-full); background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;">
+            <i class="ri-mail-fill"></i>
+          </div>
+          <div>
+            <div style="font-weight: 700; color: var(--dark);">Email Support</div>
+            <div style="color: var(--gray-600);">care@vegist-organic.com</div>
+            <span style="font-size: 0.75rem; color: var(--gray-400);">Average response: under 1 hour</span>
+          </div>
+        </div>
+
+        <div style="display: flex; gap: 1rem; align-items: flex-start;">
+          <div style="width: 42px; height: 42px; border-radius: var(--radius-full); background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.25rem; flex-shrink: 0;">
+            <i class="ri-map-pin-2-fill"></i>
+          </div>
+          <div>
+            <div style="font-weight: 700; color: var(--dark);">Distribution Center</div>
+            <div style="color: var(--gray-600);">104 Fresh Meadow Way, Eugene, OR 97401</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Contact Form -->
+    <div style="background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); padding: 2.5rem; box-shadow: var(--shadow-sm);">
+      <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--dark); margin-bottom: 1.5rem;">Send Us A Message</h3>
+      <form action="{% url 'store:contact' %}" method="POST">
+        {% csrf_token %}
+        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; margin-bottom: 1rem;">
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.25rem;">Your Name *</label>
+            <input type="text" name="name" required style="width: 100%; padding: 0.65rem; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 0.9rem;">
+          </div>
+          <div>
+            <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.25rem;">Email Address *</label>
+            <input type="email" name="email" required style="width: 100%; padding: 0.65rem; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 0.9rem;">
+          </div>
+        </div>
+        <div style="margin-bottom: 1rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.25rem;">Subject</label>
+          <input type="text" name="subject" required style="width: 100%; padding: 0.65rem; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 0.9rem;">
+        </div>
+        <div style="margin-bottom: 1.5rem;">
+          <label style="display: block; font-size: 0.85rem; font-weight: 700; margin-bottom: 0.25rem;">Message *</label>
+          <textarea name="message" rows="4" required style="width: 100%; padding: 0.65rem; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 0.9rem;"></textarea>
+        </div>
+        <button type="submit" class="btn btn-primary" style="padding: 0.8rem 2rem; font-size: 0.95rem;">
+          <i class="ri-send-plane-fill"></i> Send Message
+        </button>
+      </form>
+    </div>
+  </div>
+</div>
+{% endblock %}

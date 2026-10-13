@@ -1,0 +1,136 @@
+{% load static %}
+<!-- Top Announcement Bar -->
+<div class="top-bar">
+  <div class="container top-bar-inner">
+    <div class="top-bar-left">
+      <span class="top-bar-badge">Special Offer</span>
+      <span>Free Farm-Fresh Delivery on all orders over ₹499! Use code <strong>VEGIST20</strong> for 20% OFF.</span>
+    </div>
+    <div class="top-bar-right">
+      <a href="tel:+919876543210" class="top-bar-link">
+        <i class="ri-phone-line"></i> +91 98765 43210
+      </a>
+      <a href="{% url 'store:deals' %}" class="top-bar-link">
+        <i class="ri-flashlight-line"></i> Daily Flash Deals
+      </a>
+      <span style="opacity: 0.5;">|</span>
+      <span>🇮🇳 INR (₹)</span>
+    </div>
+  </div>
+</div>
+
+<!-- Main Sticky Header -->
+<header class="main-header">
+  <div class="container header-inner">
+    <!-- Brand Logo -->
+    <a href="{% url 'store:home' %}" class="brand-logo">
+      <div class="logo-icon-box">
+        <i class="ri-leaf-fill"></i>
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">Veg<span>ist</span></span>
+        <p>Organic Supermarket</p>
+      </div>
+    </a>
+
+    <!-- Live Search Box with Category Selector -->
+    <div class="header-search">
+      <form action="{% url 'store:shop' %}" method="GET" class="search-box-form">
+        <select name="category" class="search-category-select">
+          <option value="">All Categories</option>
+          {% for cat in all_categories %}
+            <option value="{{ cat.id }}" {% if request.GET.category == cat.id|stringformat:"s" %}selected{% endif %}>{{ cat.name }}</option>
+          {% endfor %}
+        </select>
+        <input type="text" name="q" value="{{ request.GET.q|default:'' }}" class="search-input"
+          placeholder="Search products..." autocomplete="off">
+        <button type="submit" class="search-btn" title="Search">
+          <i class="ri-search-line"></i>
+        </button>
+      </form>
+    </div>
+
+    <!-- Header Actions (Account, Wishlist, Cart) -->
+    <div class="header-actions">
+      <!-- User Account -->
+      <div class="action-item" style="position: relative;">
+        <div class="action-icon-wrap">
+          <i class="ri-user-3-line"></i>
+        </div>
+        <div class="action-text">
+          {% if user.is_authenticated %}
+          <span class="label">Hello, {{ user.first_name|default:user.username }}</span>
+          <div style="display: flex; gap: 0.4rem; align-items: center;">
+            <a href="{% url 'accounts:profile' %}" class="value">My Account</a>
+            {% if user.is_staff or user.is_superuser %}
+              <a href="{% url 'dashboard:home' %}"
+                style="font-size: 0.72rem; color: #15803d; font-weight: 800; background: #dcfce7; padding: 0.15rem 0.5rem; border-radius: 4px; text-decoration: none;" title="Open Admin Dashboard">Dashboard</a>
+            {% endif %}
+          </div>
+          {% else %}
+          <span class="label">Sign In</span>
+          <a href="{% url 'accounts:login' %}" class="value">Account</a>
+          {% endif %}
+        </div>
+      </div>
+
+      <!-- Wishlist -->
+      <a href="{% url 'accounts:wishlist' %}" class="action-item" title="View Wishlist">
+        <div class="action-icon-wrap">
+          <i class="ri-heart-line"></i>
+          <span class="badge-count header-wishlist-badge">{{ wishlist_count|default:"0" }}</span>
+        </div>
+        <div class="action-text">
+          <span class="label">Favorite</span>
+          <span class="value">My Wishlist</span>
+        </div>
+      </a>
+
+      <!-- Cart Drawer Trigger -->
+      <div class="action-item js-open-cart" title="Open Shopping Cart" style="cursor: pointer;">
+        <div class="action-icon-wrap" style="background-color: var(--primary-light); color: var(--primary); border-color: var(--primary);">
+          <i class="ri-shopping-basket-2-line"></i>
+          <span class="badge-count header-cart-badge" style="background-color: var(--primary); color: #fff;">{{ cart_item_count|default:"0" }}</span>
+        </div>
+        <div class="action-text">
+          <span class="label">My Cart</span>
+          <span class="value header-cart-subtotal" style="color: var(--primary); font-weight: 800;">₹{{ cart_subtotal|default:"0.00" }}</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- Navigation Bar -->
+<nav class="nav-bar">
+  <div class="container nav-bar-inner">
+    <!-- Main Navigation Links -->
+    <ul class="main-nav">
+      <li><a href="{% url 'store:home' %}"
+          class="nav-link {% if request.resolver_match.url_name == 'home' %}active{% endif %}">Home</a></li>
+      <li><a href="{% url 'store:shop' %}"
+          class="nav-link {% if request.resolver_match.url_name == 'shop' %}active{% endif %}">Shop All Produce</a></li>
+      <li>
+        <a href="{% url 'store:deals' %}"
+          class="nav-link {% if request.resolver_match.url_name == 'deals' %}active{% endif %}">
+          Deals of the Day <span class="nav-badge-hot">HOT</span>
+        </a>
+      </li>
+      <li><a href="{% url 'store:recipes' %}"
+          class="nav-link {% if request.resolver_match.url_name == 'recipes' %}active{% endif %}">Farm Recipes</a></li>
+      <li><a href="{% url 'store:about' %}"
+          class="nav-link {% if request.resolver_match.url_name == 'about' %}active{% endif %}">Our Story</a></li>
+      <li><a href="{% url 'store:contact' %}"
+          class="nav-link {% if request.resolver_match.url_name == 'contact' %}active{% endif %}">Contact</a></li>
+    </ul>
+
+    <!-- Quick Help Phone -->
+    <div class="nav-helpline">
+      <i class="ri-customer-service-2-fill nav-helpline-icon"></i>
+      <div class="nav-helpline-text">
+        <span>Customer Support</span>
+        <strong>+91 98765 43210</strong>
+      </div>
+    </div>
+  </div>
+</nav>

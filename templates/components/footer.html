@@ -1,0 +1,84 @@
+{% load static %}
+<footer class="site-footer">
+  <div class="container">
+    <div class="footer-grid">
+      <!-- Col 1: Brand Info -->
+      <div class="footer-widget">
+        <a href="{% url 'store:home' %}" class="brand-logo" style="margin-bottom: 1.25rem;">
+          <div class="logo-icon-box">
+            <i class="ri-leaf-fill"></i>
+          </div>
+          <div class="brand-text">
+            <span class="brand-name" style="color: var(--white);">Veg<span style="color: #86efac;">ist</span></span>
+            <p style="color: var(--gray-400);">Organic Supermarket</p>
+          </div>
+        </a>
+        <p style="font-size: 0.9rem; line-height: 1.6; margin-bottom: 1.25rem; color: var(--gray-400);">
+          Vegist is your trusted farm-direct organic grocery supermarket. We deliver pesticide-free produce, heritage fruits, artisanal breads, and cold-pressed juices directly from verified ecological growers to your dining table.
+        </p>
+        <div style="font-size: 0.875rem; color: var(--gray-400); display: flex; flex-direction: column; gap: 0.5rem;">
+          <div><i class="ri-map-pin-line" style="color: #86efac;"></i> Bengaluru Organic Hub, Indiranagar, Bengaluru, Karnataka 560038</div>
+          <div><i class="ri-phone-line" style="color: #86efac;"></i> +91 98765 43210</div>
+          <div><i class="ri-mail-line" style="color: #86efac;"></i> care@vegist.in</div>
+        </div>
+      </div>
+
+      <!-- Col 2: Quick Links -->
+      <div class="footer-widget">
+        <h4>Explore Vegist</h4>
+        <ul class="footer-links">
+          <li><a href="{% url 'store:shop' %}">All Farm Produce</a></li>
+          <li><a href="{% url 'store:deals' %}">Daily Flash Sales</a></li>
+          <li><a href="{% url 'store:recipes' %}">Farm Kitchen Recipes</a></li>
+          <li><a href="{% url 'store:about' %}">Our Regenerative Mission</a></li>
+          <li><a href="{% url 'store:contact' %}">Contact Customer Care</a></li>
+        </ul>
+      </div>
+
+      <!-- Col 3: Categories -->
+      <div class="footer-widget">
+        <h4>Organic Aisles</h4>
+        <ul class="footer-links">
+          {% for cat in all_categories|slice:":5" %}
+            <li><a href="{{ cat.get_absolute_url }}">{{ cat.name }}</a></li>
+          {% endfor %}
+        </ul>
+      </div>
+
+      <!-- Col 4: Newsletter -->
+      <div class="footer-widget">
+        <h4>Fresh Newsletter</h4>
+        <p style="font-size: 0.875rem; color: var(--gray-400); margin-bottom: 1rem;">
+          Join 20,000+ organic food lovers. Get weekly farm harvest updates, exclusive coupon codes, and chef recipes.
+        </p>
+        <form action="{% url 'store:newsletter_subscribe' %}" method="POST" class="footer-newsletter-form">
+          {% csrf_token %}
+          <input type="email" name="email" placeholder="Your email address..." required>
+          <button type="submit" class="btn btn-primary" style="border-radius: var(--radius-full); padding: 0.6rem 1.25rem;">
+            Join
+          </button>
+        </form>
+        <div style="margin-top: 1.5rem; display: flex; gap: 1rem; font-size: 1.25rem;">
+          <a href="#" style="color: var(--gray-400);"><i class="ri-instagram-line"></i></a>
+          <a href="#" style="color: var(--gray-400);"><i class="ri-facebook-fill"></i></a>
+          <a href="#" style="color: var(--gray-400);"><i class="ri-twitter-x-line"></i></a>
+          <a href="#" style="color: var(--gray-400);"><i class="ri-youtube-line"></i></a>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Bar -->
+    <div class="footer-bottom">
+      <div>
+        &copy; 2026 <strong>Vegist Organic Supermarket</strong>. Crafted with Python & Django. All rights reserved.
+      </div>
+      <div class="payment-badges" style="display: flex; gap: 0.85rem; align-items: center;">
+        <span style="background: rgba(255,255,255,0.1); padding: 0.2rem 0.55rem; border-radius: 4px; font-size: 0.75rem; font-weight: 800; color: #fff; letter-spacing: 0.5px;">UPI</span>
+        <span style="background: rgba(255,255,255,0.1); padding: 0.2rem 0.55rem; border-radius: 4px; font-size: 0.75rem; font-weight: 800; color: #fff; letter-spacing: 0.5px;">RuPay</span>
+        <i class="ri-visa-line" title="Visa"></i>
+        <i class="ri-mastercard-line" title="Mastercard"></i>
+        <i class="ri-bank-card-line" title="NetBanking / Cards"></i>
+      </div>
+    </div>
+  </div>
+</footer>

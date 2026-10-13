@@ -1,0 +1,322 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}{{ product.name }} - Vegist Organic Supermarket{% endblock %}
+{% block meta_description %}{{ product.short_description|default:product.description|truncatewords:25 }}{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
+  <!-- Breadcrumb -->
+  <div style="font-size: 0.85rem; color: var(--gray-500); margin-bottom: 2rem; display: flex; align-items: center; gap: 0.5rem;">
+    <a href="{% url 'store:home' %}"><i class="ri-home-4-line"></i> Home</a>
+    <span>/</span>
+    <a href="{% url 'store:shop' %}">Shop</a>
+    <span>/</span>
+    <a href="{{ product.category.get_absolute_url }}">{{ product.category.name }}</a>
+    <span>/</span>
+    <span style="color: var(--primary); font-weight: 700;">{{ product.name }}</span>
+  </div>
+
+  <!-- Product Main Info -->
+  <div class="product-detail-grid">
+    <!-- Gallery Left -->
+    <div>
+      <div class="product-gallery-main">
+        {% if product.image %}
+          <img src="{{ product.image.url }}" alt="{{ product.name }}">
+        {% else %}
+          <img src="{% static 'images/cat_vegetables.jpg' %}" alt="{{ product.name }}">
+        {% endif %}
+      </div>
+      <div style="display: flex; gap: 1rem; margin-top: 1rem;">
+        <div style="border: 2px solid var(--primary); border-radius: var(--radius); width: 80px; height: 80px; overflow: hidden; cursor: pointer;">
+          {% if product.image %}
+            <img src="{{ product.image.url }}" alt="thumb" style="width: 100%; height: 100%; object-fit: cover;">
+          {% else %}
+            <img src="{% static 'images/cat_vegetables.jpg' %}" alt="thumb" style="width: 100%; height: 100%; object-fit: cover;">
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <!-- Product Summary Right -->
+    <div style="display: flex; flex-direction: column;">
+      <div style="display: flex; align-items: center; gap: 0.75rem; margin-bottom: 0.75rem;">
+        <a href="{{ product.category.get_absolute_url }}" class="product-category-tag" style="font-size: 0.85rem;">{{ product.category.name }}</a>
+        {% if product.is_organic %}
+          <span class="product-badge badge-organic" style="position: static; font-size: 0.7rem;">100% Organic</span>
+        {% endif %}
+        {% if product.badge %}
+          <span class="product-badge badge-danger" style="position: static; font-size: 0.7rem;">{{ product.badge }}</span>
+        {% endif %}
+      </div>
+
+      <h1 style="font-size: 2.25rem; font-weight: 800; color: var(--dark); margin-bottom: 0.75rem; line-height: 1.2;">
+        {{ product.name }}
+      </h1>
+
+      <div class="product-rating" style="font-size: 0.95rem; margin-bottom: 1.25rem;">
+        <div class="stars">
+          <i class="ri-star-fill"></i>
+          <i class="ri-star-fill"></i>
+          <i class="ri-star-fill"></i>
+          <i class="ri-star-fill"></i>
+          <i class="ri-star-half-fill"></i>
+        </div>
+        <span style="font-weight: 700; color: var(--dark);">{{ product.rating }}</span>
+        <span class="rating-count">({{ product.reviews_count }} verified reviews)</span>
+        <span style="opacity: 0.4;">|</span>
+        {% if product.stock == 0 %}
+          <span style="color: #dc2626; font-weight: 700;"><i class="ri-close-circle-fill"></i> Out of Stock</span>
+        {% elif product.stock <= 10 %}
+          <span style="color: #b45309; font-weight: 700;"><i class="ri-fire-fill"></i> Only {{ product.stock }} units remaining</span>
+        {% else %}
+          <span style="color: var(--primary); font-weight: 600;"><i class="ri-checkbox-circle-fill"></i> {{ product.stock }} units in stock</span>
+        {% endif %}
+      </div>
+
+      <div class="product-prices" style="margin-bottom: 1.5rem; align-items: baseline; gap: 1rem;">
+        <span class="product-price" style="font-size: 2.4rem; color: var(--primary);">₹{{ product.price }}</span>
+        {% if product.old_price %}
+          <span class="product-old-price" style="font-size: 1.4rem;">₹{{ product.old_price }}</span>
+          <span style="background-color: var(--danger-light); color: var(--danger); font-weight: 800; font-size: 0.85rem; padding: 0.2rem 0.6rem; border-radius: var(--radius-full);">
+            Save {{ product.discount_percent }}%
+          </span>
+        {% endif %}
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <span style="font-size: 0.9rem; color: var(--gray-500); font-weight: 600;">Package / Pack Size:</span>
+        <span class="product-unit-badge" style="font-size: 0.95rem; padding: 0.3rem 0.8rem; margin-left: 0.5rem;">{{ product.unit }}</span>
+      </div>
+
+      <p style="font-size: 1rem; color: var(--gray-600); line-height: 1.7; margin-bottom: 2rem;">
+        {{ product.short_description|default:product.description|truncatewords:40 }}
+      </p>
+
+      <!-- Add to Cart / Actions Form -->
+      <div style="display: flex; gap: 1rem; align-items: center; margin-bottom: 2rem; flex-wrap: wrap;">
+        {% if product.stock > 0 %}
+          <div class="cart-qty-stepper" style="border: 2px solid var(--gray-300); padding: 0.35rem; border-radius: var(--radius-full);">
+            <button type="button" class="qty-btn" onclick="let inp = document.getElementById('detail-qty-input'); inp.value = Math.max(1, parseInt(inp.value)-1);"><i class="ri-subtract-line"></i></button>
+            <input type="text" id="detail-qty-input" class="js-qty-input" data-product-id="{{ product.id }}" value="1" style="width: 44px; border: none; text-align: center; font-weight: 800; font-size: 1rem; outline: none;">
+            <button type="button" class="qty-btn" onclick="let inp = document.getElementById('detail-qty-input'); inp.value = Math.min({{ product.stock }}, parseInt(inp.value)+1);"><i class="ri-add-line"></i></button>
+          </div>
+
+          <button type="button" class="btn btn-primary js-add-to-cart" data-product-id="{{ product.id }}" style="padding: 0.9rem 2.25rem; font-size: 1.05rem;">
+            <i class="ri-shopping-basket-fill"></i> Add to Cart
+          </button>
+        {% else %}
+          <button type="button" class="btn" disabled style="padding: 0.9rem 2.25rem; font-size: 1.05rem; background: var(--gray-200); color: var(--gray-600); cursor: not-allowed; border-radius: var(--radius-full); font-weight: 700;">
+            <i class="ri-close-circle-line"></i> Out of Stock
+          </button>
+        {% endif %}
+
+        <button type="button" class="action-btn-circle js-toggle-wishlist {% if product.id in wishlist_ids %}active{% endif %}" data-product-id="{{ product.id }}" title="Wishlist" style="width: 52px; height: 52px; font-size: 1.4rem;">
+          <i class="{% if product.id in wishlist_ids %}ri-heart-fill{% else %}ri-heart-line{% endif %}"></i>
+        </button>
+      </div>
+
+      <!-- Assurances -->
+      <div style="background-color: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: 1.25rem; display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; font-size: 0.85rem;">
+        <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--gray-700);">
+          <i class="ri-truck-line" style="color: var(--primary); font-size: 1.2rem;"></i>
+          <span>Free delivery over ₹499</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--gray-700);">
+          <i class="ri-seedling-line" style="color: var(--primary); font-size: 1.2rem;"></i>
+          <span>100% Certified Organic</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--gray-700);">
+          <i class="ri-temp-cold-line" style="color: var(--primary); font-size: 1.2rem;"></i>
+          <span>Chilled Eco-Safe Packaging</span>
+        </div>
+        <div style="display: flex; align-items: center; gap: 0.5rem; color: var(--gray-700);">
+          <i class="ri-refund-2-line" style="color: var(--primary); font-size: 1.2rem;"></i>
+          <span>Money-Back Freshness Guarantee</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Tabs: Description, Nutrition Facts, Reviews -->
+  <div style="background-color: var(--white); border: 1px solid var(--gray-200); border-radius: var(--radius-xl); padding: 2.5rem; margin-bottom: 4rem; box-shadow: var(--shadow-sm);">
+    <!-- Tab Nav -->
+    <div style="display: flex; gap: 2rem; border-bottom: 2px solid var(--gray-200); margin-bottom: 2rem;">
+      <button type="button" class="tab-btn active" onclick="switchTab(this, 'tab-desc')" style="background: none; border: none; font-size: 1.15rem; font-weight: 700; color: var(--primary); padding-bottom: 0.75rem; border-bottom: 3px solid var(--primary); cursor: pointer;">
+        Description & Farm Story
+      </button>
+      <button type="button" class="tab-btn" onclick="switchTab(this, 'tab-nutrition')" style="background: none; border: none; font-size: 1.15rem; font-weight: 700; color: var(--gray-500); padding-bottom: 0.75rem; border-bottom: 3px solid transparent; cursor: pointer;">
+        Nutritional Facts
+      </button>
+      <button type="button" class="tab-btn" onclick="switchTab(this, 'tab-reviews')" style="background: none; border: none; font-size: 1.15rem; font-weight: 700; color: var(--gray-500); padding-bottom: 0.75rem; border-bottom: 3px solid transparent; cursor: pointer;">
+        Customer Reviews ({{ reviews|length }})
+      </button>
+    </div>
+
+    <!-- Tab 1: Description -->
+    <div id="tab-desc" class="tab-content-panel">
+      <h3 style="font-size: 1.35rem; margin-bottom: 1rem; color: var(--dark);">Wholesome Organic Quality</h3>
+      <p style="color: var(--gray-600); line-height: 1.8; margin-bottom: 1.5rem;">
+        {{ product.description }}
+      </p>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1.5rem; margin-top: 1.5rem;">
+        <div style="padding: 1.25rem; background: var(--primary-subtle); border-radius: var(--radius); border-left: 4px solid var(--primary);">
+          <h4 style="font-size: 1rem; color: var(--primary); margin-bottom: 0.25rem;">Cultivated Responsibly</h4>
+          <p style="font-size: 0.85rem; color: var(--gray-600);">Grown in living soil replenished with organic compost and cover crops.</p>
+        </div>
+        <div style="padding: 1.25rem; background: var(--primary-subtle); border-radius: var(--radius); border-left: 4px solid var(--primary);">
+          <h4 style="font-size: 1rem; color: var(--primary); margin-bottom: 0.25rem;">Dawn Harvested</h4>
+          <p style="font-size: 0.85rem; color: var(--gray-600);">Picked before sunrise when natural sugars and crispness peak.</p>
+        </div>
+        <div style="padding: 1.25rem; background: var(--primary-subtle); border-radius: var(--radius); border-left: 4px solid var(--primary);">
+          <h4 style="font-size: 1rem; color: var(--primary); margin-bottom: 0.25rem;">Non-Irradiated</h4>
+          <p style="font-size: 0.85rem; color: var(--gray-600);">100% natural, unadulterated food untouched by synthetic radiation.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 2: Nutrition Facts -->
+    <div id="tab-nutrition" class="tab-content-panel" style="display: none;">
+      <h3 style="font-size: 1.35rem; margin-bottom: 1rem; color: var(--dark);">Nutrition & Nutrient Profile</h3>
+      {% if product.nutrition_facts %}
+        <table class="product-specs-table">
+          <tbody>
+            {% for key, val in product.nutrition_facts.items %}
+              <tr>
+                <td>{{ key }}</td>
+                <td><strong>{{ val }}</strong></td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      {% else %}
+        <p style="color: var(--gray-500);">100% Raw whole organic ingredient. Rich in natural dietary fiber and essential vitamins.</p>
+      {% endif %}
+    </div>
+
+    <!-- Tab 3: Reviews -->
+    <div id="tab-reviews" class="tab-content-panel" style="display: none;">
+      <div style="display: grid; grid-template-columns: 1.5fr 1fr; gap: 3rem;">
+        <!-- Review List -->
+        <div>
+          <h3 style="font-size: 1.35rem; margin-bottom: 1.5rem; color: var(--dark);">Verified Customer Feedback</h3>
+          {% for r in reviews %}
+            <div style="border-bottom: 1px solid var(--gray-200); padding-bottom: 1.25rem; margin-bottom: 1.25rem;">
+              <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.5rem;">
+                <div style="font-weight: 700; color: var(--dark);">{{ r.user_name }}</div>
+                <div style="color: #f59e0b; font-size: 0.9rem;">
+                  {% for i in "12345"|make_list %}
+                    <i class="ri-star-fill"></i>
+                  {% endfor %}
+                </div>
+              </div>
+              <p style="font-size: 0.9rem; color: var(--gray-600); line-height: 1.6;">{{ r.comment }}</p>
+              <span style="font-size: 0.75rem; color: var(--gray-400);">{{ r.created_at|date:"F d, Y" }}</span>
+            </div>
+          {% empty %}
+            <p style="color: var(--gray-500); margin-bottom: 1.5rem;">No reviews yet. Be the first to share your farm experience!</p>
+          {% endfor %}
+        </div>
+
+        <!-- Add Review Form -->
+        <div style="background-color: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: 1.5rem;">
+          <h4 style="font-size: 1.15rem; margin-bottom: 1rem; color: var(--dark);">Write a Verified Review</h4>
+          <form action="{% url 'store:product_detail' product.slug %}" method="POST">
+            {% csrf_token %}
+            <div style="margin-bottom: 1rem;">
+              <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Your Name *</label>
+              <input type="text" name="name" required value="{% if user.is_authenticated %}{{ user.get_full_name|default:user.username }}{% endif %}" style="width: 100%; padding: 0.6rem; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 0.85rem;">
+            </div>
+            <div style="margin-bottom: 1rem;">
+              <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Email Address *</label>
+              <input type="email" name="email" required value="{% if user.is_authenticated %}{{ user.email }}{% endif %}" style="width: 100%; padding: 0.6rem; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 0.85rem;">
+            </div>
+            <div style="margin-bottom: 1rem;">
+              <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Rating (Stars)</label>
+              <select name="rating" style="width: 100%; padding: 0.6rem; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 0.85rem;">
+                <option value="5">★★★★★ (5 Stars - Exceptional)</option>
+                <option value="4">★★★★☆ (4 Stars - Very Good)</option>
+                <option value="3">★★★☆☆ (3 Stars - Average)</option>
+              </select>
+            </div>
+            <div style="margin-bottom: 1.25rem;">
+              <label style="display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.35rem;">Review Comments *</label>
+              <textarea name="comment" rows="4" required placeholder="Describe taste, freshness, packaging..." style="width: 100%; padding: 0.6rem; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 0.85rem;"></textarea>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Submit Review</button>
+          </form>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Related Products in Category -->
+  {% if related_products %}
+  <div style="margin-top: 3rem;">
+    <div class="section-title-wrap">
+      <div>
+        <h2 class="section-title">Similar Harvest Items</h2>
+        <p class="section-subtitle">More wholesome picks from {{ product.category.name }}</p>
+      </div>
+    </div>
+
+    <div class="product-grid">
+      {% for rel in related_products %}
+        <div class="product-card">
+          <div class="product-thumb-wrap">
+            {% if rel.badge %}
+              <span class="product-badge badge-amber">{{ rel.badge }}</span>
+            {% endif %}
+            <div class="product-card-actions">
+              <button type="button" class="action-btn-circle js-toggle-wishlist {% if rel.id in wishlist_ids %}active{% endif %}" data-product-id="{{ rel.id }}" title="Wishlist">
+                <i class="{% if rel.id in wishlist_ids %}ri-heart-fill{% else %}ri-heart-line{% endif %}"></i>
+              </button>
+              <button type="button" class="action-btn-circle js-quick-view" data-product-id="{{ rel.id }}" title="Quick View">
+                <i class="ri-eye-line"></i>
+              </button>
+            </div>
+            <a href="{{ rel.get_absolute_url }}">
+              {% if rel.image %}
+                <img src="{{ rel.image.url }}" alt="{{ rel.name }}">
+              {% else %}
+                <img src="{% static 'images/cat_vegetables.jpg' %}" alt="{{ rel.name }}">
+              {% endif %}
+            </a>
+          </div>
+
+          <div class="product-body">
+            <h3 class="product-title"><a href="{{ rel.get_absolute_url }}">{{ rel.name }}</a></h3>
+            <span class="product-unit-badge">{{ rel.unit }}</span>
+            <div class="product-footer">
+              <div class="product-prices">
+                <span class="product-price">₹{{ rel.price }}</span>
+              </div>
+              <button type="button" class="add-cart-btn js-add-to-cart" data-product-id="{{ rel.id }}">
+                <i class="ri-add-line"></i> Add
+              </button>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function switchTab(btn, tabId) {
+  document.querySelectorAll('.tab-btn').forEach(b => {
+    b.style.color = 'var(--gray-500)';
+    b.style.borderBottomColor = 'transparent';
+  });
+  document.querySelectorAll('.tab-content-panel').forEach(p => p.style.display = 'none');
+
+  btn.style.color = 'var(--primary)';
+  btn.style.borderBottomColor = 'var(--primary)';
+  document.getElementById(tabId).style.display = 'block';
+}
+</script>
+{% endblock %}

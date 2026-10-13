@@ -1,0 +1,504 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Vegist - 100% Certified Organic Supermarket & Farm Produce{% endblock %}
+{% block meta_description %}Shop farm-fresh 100% certified organic vegetables, sweet orchard fruits, cold-pressed juices, and artisan bakery foods online at Vegist with next-day doorstep delivery.{% endblock %}
+
+{% block content %}
+<!-- 1. Hero Section -->
+<section class="hero-section">
+  <div class="container">
+    <div class="hero-grid">
+      <!-- Main Hero Banner -->
+      <div class="hero-main-banner" style="background-image: url('{% static 'images/hero_banner.jpg' %}');">
+        <div class="hero-overlay"></div>
+        <div class="hero-content">
+          <div class="hero-tag">
+            <i class="ri-seedling-fill" style="color: #86efac;"></i> 100% Certified Organic Harvest
+          </div>
+          <h1 class="hero-title">
+            Fresh &amp; Wholesome <span>Farm Grocery</span> At Your Door
+          </h1>
+          <p class="hero-desc">
+            Harvested daily at dawn by our cooperative of sustainable organic farms. Crisp heirloom veggies, sweet orchard fruits, and pure artisan foods delivered in eco-friendly chilled boxes.
+          </p>
+          <div class="hero-btn-group">
+            <a href="{% url 'store:shop' %}" class="btn btn-primary">
+              <i class="ri-shopping-basket-fill"></i> Shop Fresh Produce
+            </a>
+            <a href="{% url 'store:deals' %}" class="btn btn-white">
+              <i class="ri-flashlight-line"></i> View Today's Deals
+            </a>
+          </div>
+
+          <!-- Hero Trust Stats -->
+          <div class="hero-stats">
+            <div class="hero-stat-item">
+              <div class="hero-stat-icon">
+                <i class="ri-plant-line"></i>
+              </div>
+              <div class="hero-stat-text">
+                <strong>40+ Local Farms</strong>
+                <span>Direct Harvest</span>
+              </div>
+            </div>
+
+            <div class="hero-stat-item">
+              <div class="hero-stat-icon">
+                <i class="ri-shield-check-line"></i>
+              </div>
+              <div class="hero-stat-text">
+                <strong>100% Non-GMO</strong>
+                <span>Zero Pesticides</span>
+              </div>
+            </div>
+
+            <div class="hero-stat-item">
+              <div class="hero-stat-icon">
+                <i class="ri-temp-cold-line"></i>
+              </div>
+              <div class="hero-stat-text">
+                <strong>Eco-Chilled Box</strong>
+                <span>Next-Day Delivery</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Right Side Stacked Banners -->
+      <div class="hero-side-banners">
+        <div class="side-promo-card" style="background-image: url('{% static 'images/promo_fruits.jpg' %}');">
+          <div class="side-promo-content">
+            <span class="side-promo-tag">Seasonal Berries &amp; Citrus</span>
+            <h3 class="side-promo-title">Sweet Organic Orchard Fruits</h3>
+            <p style="font-size: 0.85rem; margin-bottom: 0.85rem; opacity: 0.9;">Save up to 25% on wild berries, gala apples, and valencia oranges.</p>
+            <a href="{% url 'store:shop_category' 'organic-fruits' %}" class="side-promo-link">
+              Shop Fruits <i class="ri-arrow-right-line"></i>
+            </a>
+          </div>
+        </div>
+
+        <div class="side-promo-card" style="background-image: url('{% static 'images/promo_juice.jpg' %}');">
+          <div class="side-promo-content">
+            <span class="side-promo-tag">Raw Cold-Pressed Cleanses</span>
+            <h3 class="side-promo-title">Detox &amp; Glow Daily Juices</h3>
+            <p style="font-size: 0.85rem; margin-bottom: 0.85rem; opacity: 0.9;">Unpasteurized hydraulic pressed fruit &amp; green vegetable shots.</p>
+            <a href="{% url 'store:shop_category' 'cold-pressed-juices' %}" class="side-promo-link">
+              Explore Juices <i class="ri-arrow-right-line"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 2. Value Propositions Bar -->
+<section class="features-bar">
+  <div class="container">
+    <div class="features-grid">
+      <div class="feature-box">
+        <div class="feature-icon-circle">
+          <i class="ri-truck-line"></i>
+        </div>
+        <div class="feature-info">
+          <h4>Free Next-Day Delivery</h4>
+          <p>On all organic orders over ₹499</p>
+        </div>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon-circle">
+          <i class="ri-plant-line"></i>
+        </div>
+        <div class="feature-info">
+          <h4>100% Certified Organic</h4>
+          <p>Strictly non-GMO, zero pesticides</p>
+        </div>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon-circle">
+          <i class="ri-recycle-line"></i>
+        </div>
+        <div class="feature-info">
+          <h4>Zero-Plastic Packaging</h4>
+          <p>100% Biodegradable chilled boxes</p>
+        </div>
+      </div>
+
+      <div class="feature-box">
+        <div class="feature-icon-circle">
+          <i class="ri-shield-check-line"></i>
+        </div>
+        <div class="feature-info">
+          <h4>100% Freshness Guarantee</h4>
+          <p>Instant refund or replacement</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 3. Category Showcase Grid -->
+<section class="section-padding">
+  <div class="container">
+    <div class="section-title-wrap">
+      <div>
+        <h2 class="section-title">Explore Organic Aisles</h2>
+        <p class="section-subtitle">Browse through our pure, pesticide-free harvest categories</p>
+      </div>
+      <a href="{% url 'store:shop' %}" class="side-promo-link" style="color: var(--primary); border-bottom-color: var(--primary);">
+        View All Aisles ({{ all_categories.count }}) <i class="ri-arrow-right-line"></i>
+      </a>
+    </div>
+
+    <div class="categories-grid">
+      {% for cat in categories %}
+        <a href="{{ cat.get_absolute_url }}" class="category-card">
+          <div class="category-img-wrap">
+            {% if cat.image %}
+              <img src="{{ cat.image.url }}" alt="{{ cat.name }}">
+            {% else %}
+              <img src="{% static 'images/cat_vegetables.jpg' %}" alt="{{ cat.name }}">
+            {% endif %}
+          </div>
+          <h3 class="category-title">{{ cat.name }}</h3>
+          <span class="category-count">{{ cat.products.count }} Products</span>
+        </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- 4. Deal of the Day Box with Live Countdown -->
+{% if hero_deal %}
+<section class="container">
+  <div class="deal-section">
+    <div class="deal-grid">
+      <div class="deal-image-container">
+        <img src="{% if hero_deal.image %}{{ hero_deal.image.url }}{% else %}{% static 'images/deal_bundle.jpg' %}{% endif %}" alt="{{ hero_deal.name }}">
+        <div class="deal-badge-pill">
+          <i class="ri-fire-fill"></i> FLASH DEAL - SAVE {{ hero_deal.discount_percent|default:"30" }}%
+        </div>
+      </div>
+
+      <div class="deal-content">
+        <div class="deal-header-tag">
+          <i class="ri-timer-flash-line"></i> Deal of the Day - Limited Harvest
+        </div>
+        <h2 class="deal-product-title">
+          <a href="{{ hero_deal.get_absolute_url }}" style="color: inherit;">{{ hero_deal.name }}</a>
+        </h2>
+        
+        <div class="deal-pricing">
+          <span class="deal-price">₹{{ hero_deal.price }}</span>
+          {% if hero_deal.old_price %}
+            <span class="deal-old-price">₹{{ hero_deal.old_price }}</span>
+          {% endif %}
+          <span class="product-unit-badge" style="font-size: 0.9rem; padding: 0.35rem 0.85rem;">{{ hero_deal.unit }}</span>
+        </div>
+
+        <p style="font-size: 0.95rem; color: var(--gray-600); line-height: 1.6;">
+          {{ hero_deal.short_description|default:hero_deal.description|truncatewords:25 }}
+        </p>
+
+        <!-- Live Countdown Timer -->
+        <div>
+          <div style="font-size: 0.85rem; font-weight: 700; color: var(--gray-700); margin-bottom: 0.5rem; text-transform: uppercase;">
+            Offer Ends In:
+          </div>
+          <div class="deal-countdown-box" data-deal-ends="{{ hero_deal.deal_ends_at|date:'c' }}">
+            <div class="countdown-unit">
+              <div id="timer-days" class="countdown-number">02</div>
+              <div class="countdown-label">Days</div>
+            </div>
+            <div class="countdown-unit">
+              <div id="timer-hours" class="countdown-number">14</div>
+              <div class="countdown-label">Hours</div>
+            </div>
+            <div class="countdown-unit">
+              <div id="timer-mins" class="countdown-number">45</div>
+              <div class="countdown-label">Mins</div>
+            </div>
+            <div class="countdown-unit">
+              <div id="timer-secs" class="countdown-number">18</div>
+              <div class="countdown-label">Secs</div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Stock Bar -->
+        <div class="deal-stock-bar-wrap">
+          <div class="deal-stock-labels" style="margin-bottom: 0.4rem; font-size: 0.85rem;">
+            <span>Stock Remaining: <strong>{{ hero_deal.stock }} boxes</strong></span>
+            <span>Status: <strong style="color: var(--primary);"><i class="ri-fire-fill"></i> Selling Fast</strong></span>
+          </div>
+          <div class="deal-stock-progress">
+            <div class="deal-stock-fill" style="width: 72%;"></div>
+          </div>
+        </div>
+
+        <!-- Action Form with Stepper -->
+        <div class="deal-action-group">
+          <div class="deal-qty-stepper">
+            <button type="button" class="qty-btn" onclick="let inp = this.parentElement.querySelector('.js-qty-input'); inp.value = Math.max(1, parseInt(inp.value)-1);" aria-label="Decrease quantity"><i class="ri-subtract-line"></i></button>
+            <input type="text" class="js-qty-input" data-product-id="{{ hero_deal.id }}" value="1" readonly aria-label="Quantity">
+            <button type="button" class="qty-btn" onclick="let inp = this.parentElement.querySelector('.js-qty-input'); inp.value = parseInt(inp.value)+1;" aria-label="Increase quantity"><i class="ri-add-line"></i></button>
+          </div>
+
+          <button type="button" class="btn btn-primary js-add-to-cart" data-product-id="{{ hero_deal.id }}" style="padding: 0.85rem 2rem; font-size: 1rem;">
+            <i class="ri-shopping-basket-fill"></i> Add Deal to Cart
+          </button>
+          <button type="button" class="action-btn-circle js-toggle-wishlist {% if hero_deal.id in wishlist_ids %}active{% endif %}" data-product-id="{{ hero_deal.id }}" title="Wishlist" style="width: 48px; height: 48px; font-size: 1.4rem;">
+            <i class="{% if hero_deal.id in wishlist_ids %}ri-heart-fill{% else %}ri-heart-line{% endif %}"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- 5. Interactive Produce Showcase (Tabs: Featured / Trending / Best Sellers / Deals) -->
+<section class="section-padding" style="background-color: var(--white);" id="produce-showcase">
+  <div class="container">
+    <div class="section-title-wrap product-tab-header">
+      <div>
+        <h2 class="section-title">Farm-Fresh Organic Harvest</h2>
+        <p class="section-subtitle">Customer favorites picked daily at sunrise from verified family farms</p>
+      </div>
+
+      <!-- Interactive Tab Filter Pills -->
+      <div class="product-tabs" role="tablist">
+        <button type="button" class="tab-btn active" data-tab="featured" role="tab" aria-selected="true">
+          <i class="ri-sparkling-fill"></i> Featured
+        </button>
+        <button type="button" class="tab-btn" data-tab="trending" role="tab" aria-selected="false">
+          <i class="ri-fire-fill"></i> Trending
+        </button>
+        <button type="button" class="tab-btn" data-tab="bestsellers" role="tab" aria-selected="false">
+          <i class="ri-award-fill"></i> Best Sellers
+        </button>
+        <button type="button" class="tab-btn" data-tab="deals" role="tab" aria-selected="false">
+          <i class="ri-flashlight-fill"></i> Hot Deals
+        </button>
+      </div>
+    </div>
+
+    <!-- Tab Pane 1: Featured -->
+    <div id="tab-featured" class="product-tab-pane active" role="tabpanel">
+      <div class="product-grid">
+        {% for product in featured_products %}
+          {% include 'components/product_card.html' with product=product %}
+        {% empty %}
+          <p style="grid-column: 1 / -1; text-align: center; color: var(--gray-500); padding: 2rem;">No featured products available right now.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Tab Pane 2: Trending -->
+    <div id="tab-trending" class="product-tab-pane" role="tabpanel">
+      <div class="product-grid">
+        {% for product in trending_products %}
+          {% include 'components/product_card.html' with product=product %}
+        {% empty %}
+          <p style="grid-column: 1 / -1; text-align: center; color: var(--gray-500); padding: 2rem;">No trending products available right now.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Tab Pane 3: Best Sellers -->
+    <div id="tab-bestsellers" class="product-tab-pane" role="tabpanel">
+      <div class="product-grid">
+        {% for product in best_sellers %}
+          {% include 'components/product_card.html' with product=product %}
+        {% empty %}
+          <p style="grid-column: 1 / -1; text-align: center; color: var(--gray-500); padding: 2rem;">No best seller products available right now.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- Tab Pane 4: Hot Deals -->
+    <div id="tab-deals" class="product-tab-pane" role="tabpanel">
+      <div class="product-grid">
+        {% for product in deal_products %}
+          {% include 'components/product_card.html' with product=product %}
+        {% empty %}
+          <p style="grid-column: 1 / -1; text-align: center; color: var(--gray-500); padding: 2rem;">No flash deals active at the moment.</p>
+        {% endfor %}
+      </div>
+    </div>
+
+    <!-- View All Link -->
+    <div style="text-align: center; margin-top: 2.75rem;">
+      <a href="{% url 'store:shop' %}" class="btn btn-outline" style="border-color: var(--gray-300); color: var(--dark); padding: 0.75rem 2rem; font-size: 0.95rem;">
+        Explore All Farm Produce <i class="ri-arrow-right-line"></i>
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- 6. Split Farm Promotional Banners -->
+<section class="container split-promo-section">
+  <div class="split-promo-grid">
+    <!-- Banner 1: Vegetables -->
+    <div class="split-promo-card" style="background-image: url('{% static 'images/cat_vegetables.jpg' %}');">
+      <div class="split-promo-overlay"></div>
+      <div class="split-promo-content">
+        <span style="color: #86efac; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Regenerative Agriculture</span>
+        <h3 style="color: #fff; font-size: 1.75rem; margin: 0.5rem 0 1rem; font-weight: 800;">100% Pesticide-Free Greens &amp; Veggies</h3>
+        <p style="font-size: 0.85rem; margin-bottom: 1.25rem; opacity: 0.9;">Heirloom spinach, crisp cucumbers, and earthy root vegetables delivered within hours of harvest.</p>
+        <a href="{% url 'store:shop_category' 'fresh-vegetables' %}" class="btn btn-primary" style="padding: 0.6rem 1.4rem; font-size: 0.9rem;">
+          Shop Vegetables <i class="ri-arrow-right-line"></i>
+        </a>
+      </div>
+    </div>
+
+    <!-- Banner 2: Bakery -->
+    <div class="split-promo-card" style="background-image: url('{% static 'images/cat_bakery.jpg' %}');">
+      <div class="split-promo-overlay"></div>
+      <div class="split-promo-content">
+        <span style="color: #f59e0b; font-weight: 800; font-size: 0.8rem; text-transform: uppercase; letter-spacing: 1px;">Stoneground Wild Sourdough</span>
+        <h3 style="color: #fff; font-size: 1.75rem; margin: 0.5rem 0 1rem; font-weight: 800;">Slow Fermented Artisan Bakery</h3>
+        <p style="font-size: 0.85rem; margin-bottom: 1.25rem; opacity: 0.9;">Handmade with ancient heritage grains and zero commercial yeast for wholesome gut health.</p>
+        <a href="{% url 'store:shop_category' 'artisan-bakery' %}" class="btn btn-accent" style="padding: 0.6rem 1.4rem; font-size: 0.9rem;">
+          Shop Bakery <i class="ri-arrow-right-line"></i>
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- 7. Promotional Perks & Coupon Banner -->
+<section class="container">
+  <div class="promo-coupon-banner">
+    <div>
+      <span style="color: #86efac; font-size: 0.85rem; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; display: inline-flex; align-items: center; gap: 0.4rem;">
+        <i class="ri-gift-line"></i> Special Welcome Offer
+      </span>
+      <h3 style="font-size: 2rem; font-weight: 800; margin: 0.5rem 0 0.75rem; color: #ffffff;">
+        Get 20% OFF Your First Farm Harvest
+      </h3>
+      <p style="font-size: 0.95rem; color: rgba(255,255,255,0.85); max-width: 560px; line-height: 1.6;">
+        Use code at checkout to unlock savings on organic fruits, crisp greens, cold-pressed juices, and farm artisan pantry foods.
+      </p>
+    </div>
+
+    <div style="display: flex; flex-direction: column; align-items: center; gap: 0.75rem;">
+      <div class="coupon-pill-wrap">
+        <span style="font-size: 0.8rem; color: rgba(255,255,255,0.8); text-transform: uppercase; font-weight: 700;">Promo Code:</span>
+        <span class="coupon-code-text">VEGIST20</span>
+        <button type="button" class="btn-copy-coupon js-copy-coupon" data-code="VEGIST20" title="Click to copy code">
+          <i class="ri-file-copy-line"></i> Copy
+        </button>
+      </div>
+      <span style="font-size: 0.75rem; color: rgba(255,255,255,0.7);"><i class="ri-check-line"></i> Valid on all organic harvest orders over ₹499</span>
+    </div>
+  </div>
+</section>
+
+<!-- 8. Verified Customer Reviews -->
+<section class="section-padding" style="background-color: #f8fafc; border-top: 1px solid var(--gray-200);">
+  <div class="container">
+    <div class="section-title-wrap">
+      <div>
+        <h2 class="section-title">Loved by 20,000+ Conscious Families</h2>
+        <p class="section-subtitle">Real verified feedback from customers who love fresh, clean grocery</p>
+      </div>
+    </div>
+
+    <div class="reviews-grid">
+      {% for review in recent_reviews %}
+        <div class="review-card">
+          <div>
+            <div class="review-stars">
+              {% for i in "12345"|make_list %}
+                {% if forloop.counter <= review.rating %}
+                  <i class="ri-star-fill"></i>
+                {% else %}
+                  <i class="ri-star-line" style="color: var(--gray-300);"></i>
+                {% endif %}
+              {% endfor %}
+            </div>
+            <p class="review-text">
+              "{{ review.comment }}"
+            </p>
+          </div>
+
+          <div class="review-user-row">
+            <div class="review-avatar">
+              {{ review.user_name|slice:":2"|upper }}
+            </div>
+            <div class="review-user-info">
+              <h4>{{ review.user_name }}</h4>
+              <span><i class="ri-verified-badge-fill"></i> Verified Buyer</span>
+              {% if review.product %}
+                <a href="{{ review.product.get_absolute_url }}" class="review-product-tag">
+                  Item: {{ review.product.name|truncatechars:28 }}
+                </a>
+              {% endif %}
+            </div>
+          </div>
+        </div>
+      {% empty %}
+        <!-- Fallback if no database reviews -->
+        <div class="review-card">
+          <div>
+            <div class="review-stars">
+              <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i>
+            </div>
+            <p class="review-text">
+              "The freshness is incredible. The heirloom tomatoes and baby carrots arrived chilled with zero plastic packaging. Vegist has replaced my weekly trip to the supermarket!"
+            </p>
+          </div>
+          <div class="review-user-row">
+            <div class="review-avatar">SJ</div>
+            <div class="review-user-info">
+              <h4>Sarah Jenkins</h4>
+              <span><i class="ri-verified-badge-fill"></i> Verified Buyer</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div>
+            <div class="review-stars">
+              <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i>
+            </div>
+            <p class="review-text">
+              "The Family Harvest Box saved us at least ₹500 this week. The artisan sourdough bread had a blistered crust that tasted right out of a Paris bakery. Ordering again!"
+            </p>
+          </div>
+          <div class="review-user-row">
+            <div class="review-avatar" style="background-color: var(--accent-light); color: var(--dark);">MC</div>
+            <div class="review-user-info">
+              <h4>Michael Chang</h4>
+              <span><i class="ri-verified-badge-fill"></i> Verified Buyer</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="review-card">
+          <div>
+            <div class="review-stars">
+              <i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i><i class="ri-star-fill"></i>
+            </div>
+            <p class="review-text">
+              "Cold-pressed green vitality juice is hands down the best detox tonic on the market. Clean, unadulterated, and no added sugar. Delivery is always on time."
+            </p>
+          </div>
+          <div class="review-user-row">
+            <div class="review-avatar">ER</div>
+            <div class="review-user-info">
+              <h4>Elena Rostova</h4>
+              <span><i class="ri-verified-badge-fill"></i> Verified Buyer</span>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endblock %}

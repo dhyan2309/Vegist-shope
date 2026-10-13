@@ -1,0 +1,67 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Vegist - Organic Vegetables & Grocery eCommerce{% endblock %}</title>
+  <meta name="description" content="{% block meta_description %}Vegist is an organic farm-fresh vegetable and grocery eCommerce store delivering wholesome non-GMO produce, raw juices, and artisan bakery foods.{% endblock %}">
+  
+  <!-- Favicon (Matching Vegist Brand Logo) -->
+  <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+  <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+
+  <!-- Google Fonts: Plus Jakarta Sans & Outfit -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Remix Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css">
+
+  <!-- Vegist Core CSS -->
+  <link rel="stylesheet" href="{% static 'css/vegist.css' %}">
+  {% block extra_css %}{% endblock %}
+</head>
+<body>
+
+  <!-- Toast Notification Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Server Messages -->
+  {% if messages %}
+    <div style="position: fixed; top: 1rem; right: 1rem; z-index: 1200; display: flex; flex-direction: column; gap: 0.5rem;">
+      {% for message in messages %}
+        <div class="vegist-toast {% if message.tags == 'error' %}toast-error{% endif %}">
+          <i class="{% if message.tags == 'error' %}ri-error-warning-line{% else %}ri-checkbox-circle-fill{% endif %}"></i>
+          <span>{{ message }}</span>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+  <!-- Header -->
+  {% include 'components/header.html' %}
+
+  <!-- Main Content -->
+  <main>
+    {% block content %}{% endblock %}
+  </main>
+
+  <!-- Global Footer -->
+  {% include 'components/footer.html' %}
+
+  <!-- Interactive Slide-in Cart Drawer -->
+  {% include 'components/cart_drawer.html' %}
+
+  <!-- Quick View Modal -->
+  {% include 'components/quick_view_modal.html' %}
+
+  <!-- Core JavaScript -->
+  <script src="{% static 'js/vegist.js' %}"></script>
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

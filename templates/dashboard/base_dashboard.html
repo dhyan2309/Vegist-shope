@@ -1,0 +1,886 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{% block title %}Admin Dashboard{% endblock %} - Vegist Organic Supermarket</title>
+
+  <!-- Favicon (Matching Vegist Brand Logo) -->
+  <link rel="icon" type="image/svg+xml" href="{% static 'images/favicon.svg' %}">
+  <link rel="icon" type="image/png" sizes="32x32" href="{% static 'images/favicon-32x32.png' %}">
+  <link rel="icon" type="image/png" sizes="16x16" href="{% static 'images/favicon-16x16.png' %}">
+  <link rel="apple-touch-icon" sizes="180x180" href="{% static 'images/apple-touch-icon.png' %}">
+  <link rel="shortcut icon" href="{% static 'images/favicon.ico' %}">
+
+  <!-- Google Fonts & RemixIcon -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@500;600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+  
+  <!-- Base Storefront CSS & Dashboard Styles -->
+  <link rel="stylesheet" href="{% static 'css/vegist.css' %}">
+
+  <style>
+    :root {
+      --dash-bg: #f8fafc;
+      --dash-sidebar-bg: #0f172a;
+      --dash-sidebar-text: #94a3b8;
+      --dash-sidebar-hover: #1e293b;
+      --dash-sidebar-active: #15803d;
+    }
+
+    body {
+      background-color: var(--dash-bg);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      color: var(--dark);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Dashboard Sidebar */
+    .dash-sidebar {
+      width: 260px;
+      background-color: var(--dash-sidebar-bg);
+      color: #fff;
+      display: flex;
+      flex-direction: column;
+      position: fixed;
+      top: 0;
+      bottom: 0;
+      left: 0;
+      z-index: 100;
+      transition: all 0.3s ease;
+      overflow-y: auto;
+    }
+
+    .dash-brand {
+      padding: 1.5rem 1.25rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      text-decoration: none;
+      color: #fff;
+    }
+
+    .dash-brand-icon {
+      width: 40px;
+      height: 40px;
+      border-radius: var(--radius);
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.4rem;
+      color: #fff;
+      box-shadow: 0 4px 10px rgba(22, 163, 74, 0.3);
+    }
+
+    .dash-brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .dash-brand-title span {
+      color: #4ade80;
+    }
+
+    .dash-brand-badge {
+      font-size: 0.68rem;
+      color: #fef08a;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 700;
+    }
+
+    .dash-nav {
+      padding: 1.25rem 0.75rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      flex: 1;
+    }
+
+    .dash-nav-header {
+      font-size: 0.7rem;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #64748b;
+      padding: 0.75rem 0.75rem 0.35rem;
+      font-weight: 700;
+    }
+
+    .dash-nav-link {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      padding: 0.65rem 0.85rem;
+      border-radius: var(--radius);
+      color: var(--dash-sidebar-text);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 600;
+      transition: all 0.2s ease;
+    }
+
+    .dash-nav-link i {
+      font-size: 1.2rem;
+      color: #94a3b8;
+      transition: color 0.2s ease;
+    }
+
+    .dash-nav-link:hover {
+      background-color: var(--dash-sidebar-hover);
+      color: #fff;
+    }
+
+    .dash-nav-link:hover i {
+      color: #4ade80;
+    }
+
+    .dash-nav-link.active {
+      background: linear-gradient(135deg, #15803d, #16a34a);
+      color: #fff;
+      font-weight: 700;
+      box-shadow: 0 4px 12px rgba(22, 163, 74, 0.25);
+    }
+
+    .dash-nav-link.active i {
+      color: #fff;
+    }
+
+    .dash-nav-badge {
+      margin-left: auto;
+      padding: 0.15rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      font-weight: 800;
+      background: rgba(255, 255, 255, 0.15);
+      color: #fff;
+    }
+
+    .dash-sidebar-footer {
+      padding: 1rem 1.25rem;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    /* Main Content Wrapper */
+    .dash-wrapper {
+      margin-left: 260px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      min-width: 0;
+    }
+
+    /* Dashboard Header */
+    .dash-header {
+      background-color: #fff;
+      height: 70px;
+      border-bottom: 1px solid var(--gray-200);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2rem;
+      position: sticky;
+      top: 0;
+      z-index: 90;
+    }
+
+    .dash-header-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.35rem;
+      font-weight: 800;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .dash-header-actions {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .btn-storefront {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.4rem;
+      padding: 0.5rem 1rem;
+      border-radius: var(--radius);
+      background-color: var(--primary-light);
+      color: var(--primary);
+      border: 1px solid #bbf7d0;
+      font-size: 0.85rem;
+      font-weight: 700;
+      text-decoration: none;
+      transition: all 0.2s ease;
+    }
+
+    .btn-storefront:hover {
+      background-color: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+    }
+
+    /* Sidebar User Profile Card */
+    .dash-user-card {
+      margin: 1rem 0.75rem 0.5rem;
+      padding: 0.85rem 0.9rem;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+
+    .dash-user-avatar {
+      position: relative;
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 1.1rem;
+      flex-shrink: 0;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.25);
+    }
+
+    .user-online-dot {
+      position: absolute;
+      bottom: 0;
+      right: 0;
+      width: 11px;
+      height: 11px;
+      background-color: #22c55e;
+      border: 2px solid #0f172a;
+      border-radius: 50%;
+    }
+
+    .dash-user-details {
+      min-width: 0;
+      flex: 1;
+    }
+
+    .dash-user-greeting {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      letter-spacing: 0.8px;
+      color: #94a3b8;
+      font-weight: 700;
+      line-height: 1.1;
+    }
+
+    .dash-user-name {
+      font-size: 0.92rem;
+      font-weight: 800;
+      color: #fff;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      line-height: 1.3;
+    }
+
+    .dash-user-role {
+      font-size: 0.72rem;
+      color: #4ade80;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    /* Top Header User Badge */
+    .dash-header-user {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      background: #f8fafc;
+      border: 1px solid var(--gray-200);
+      padding: 0.35rem 0.85rem;
+      border-radius: var(--radius-full);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .dash-header-user .admin-avatar {
+      position: relative;
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #16a34a, #0d9488);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+
+    .dash-header-user .user-online-dot {
+      border-color: #fff;
+      width: 10px;
+      height: 10px;
+    }
+
+    .dash-header-user-info {
+      display: flex;
+      flex-direction: column;
+      line-height: 1.2;
+    }
+
+    .dash-header-user-label {
+      font-size: 0.68rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      color: var(--gray-500);
+      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+
+    .dash-header-user-name {
+      font-size: 0.88rem;
+      font-weight: 800;
+      color: var(--dark);
+      white-space: nowrap;
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .dash-header-user-actions {
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+      margin-left: 0.35rem;
+      border-left: 1px solid var(--gray-200);
+      padding-left: 0.5rem;
+    }
+
+    .dash-user-action-btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.25rem;
+      font-size: 0.78rem;
+      font-weight: 700;
+      padding: 0.3rem 0.6rem;
+      border-radius: var(--radius-full);
+      text-decoration: none;
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      color: var(--gray-700);
+      transition: all 0.2s ease;
+    }
+
+    .dash-user-action-btn:hover {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-color: var(--primary);
+    }
+
+    .dash-user-action-btn.logout {
+      color: var(--danger);
+      padding: 0.3rem 0.45rem;
+    }
+
+    .dash-user-action-btn.logout:hover {
+      background: #fee2e2;
+      border-color: #fca5a5;
+      color: #b91c1c;
+    }
+
+    .dash-menu-toggle {
+      display: none;
+      background: none;
+      border: none;
+      font-size: 1.5rem;
+      color: var(--dark);
+      cursor: pointer;
+      padding: 0.25rem;
+      border-radius: var(--radius);
+    }
+
+    .dash-menu-toggle:hover {
+      background-color: var(--gray-100);
+    }
+
+    /* Welcome Banner on Dashboard Home */
+    .dash-welcome-card {
+      background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
+      color: #fff;
+      border-radius: var(--radius-xl);
+      padding: 1.75rem 2rem;
+      margin-bottom: 2rem;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      flex-wrap: wrap;
+      gap: 1.5rem;
+      box-shadow: 0 10px 25px rgba(15, 23, 42, 0.15);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .dash-welcome-card::after {
+      content: '';
+      position: absolute;
+      right: -30px;
+      bottom: -30px;
+      width: 220px;
+      height: 220px;
+      background: radial-gradient(circle, rgba(22, 163, 74, 0.2) 0%, transparent 70%);
+      pointer-events: none;
+    }
+
+    .dash-welcome-left {
+      display: flex;
+      align-items: center;
+      gap: 1.25rem;
+      position: relative;
+      z-index: 2;
+    }
+
+    .dash-welcome-avatar {
+      width: 60px;
+      height: 60px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, #16a34a, #22c55e);
+      color: #fff;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      font-weight: 800;
+      box-shadow: 0 4px 15px rgba(34, 197, 94, 0.35);
+      border: 3px solid rgba(255, 255, 255, 0.2);
+      flex-shrink: 0;
+    }
+
+    .dash-welcome-tag {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      font-size: 0.72rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      color: #4ade80;
+      margin-bottom: 0.25rem;
+    }
+
+    .dash-welcome-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.65rem;
+      font-weight: 800;
+      margin: 0 0 0.4rem 0;
+      color: #fff;
+      line-height: 1.2;
+    }
+
+    .dash-welcome-meta {
+      display: flex;
+      align-items: center;
+      gap: 0.65rem;
+      flex-wrap: wrap;
+      font-size: 0.85rem;
+      color: #94a3b8;
+    }
+
+    .dash-welcome-meta strong {
+      color: #f1f5f9;
+    }
+
+    .meta-dot {
+      color: #475569;
+    }
+
+    .dash-welcome-actions {
+      display: flex;
+      gap: 0.75rem;
+      position: relative;
+      z-index: 2;
+      align-items: center;
+    }
+
+    @media (max-width: 992px) {
+      .dash-menu-toggle { display: inline-flex; }
+      .dash-header-user-name { max-width: 120px; }
+    }
+
+    /* Main Container */
+    .dash-main {
+      padding: 2rem;
+      flex: 1;
+    }
+
+    /* Metric Cards Grid */
+    .stat-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+      gap: 1.5rem;
+      margin-bottom: 2rem;
+    }
+
+    .stat-card {
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-xl);
+      padding: 1.5rem;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .stat-card:hover {
+      transform: translateY(-3px);
+      box-shadow: var(--shadow-md);
+    }
+
+    .stat-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 4px;
+      background: var(--card-accent, var(--primary));
+    }
+
+    .stat-label {
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--gray-500);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 0.5rem;
+    }
+
+    .stat-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2rem;
+      font-weight: 800;
+      color: var(--dark);
+      line-height: 1.1;
+      margin-bottom: 0.35rem;
+    }
+
+    .stat-sub {
+      font-size: 0.8rem;
+      color: var(--gray-500);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .stat-icon {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      background: var(--icon-bg, var(--primary-light));
+      color: var(--icon-color, var(--primary));
+    }
+
+    /* Dashboard Cards & Tables */
+    .dash-card {
+      background: #fff;
+      border: 1px solid var(--gray-200);
+      border-radius: var(--radius-xl);
+      padding: 1.75rem;
+      box-shadow: var(--shadow-sm);
+      margin-bottom: 2rem;
+    }
+
+    .dash-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--gray-100);
+    }
+
+    .dash-card-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.15rem;
+      font-weight: 800;
+      color: var(--dark);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .dash-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: left;
+    }
+
+    .dash-table th {
+      background-color: var(--gray-50);
+      color: var(--gray-600);
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid var(--gray-200);
+    }
+
+    .dash-table td {
+      padding: 1rem;
+      border-bottom: 1px solid var(--gray-100);
+      font-size: 0.9rem;
+      vertical-align: middle;
+    }
+
+    .dash-table tr:hover td {
+      background-color: #fafbfc;
+    }
+
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.35rem;
+      padding: 0.25rem 0.65rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 700;
+    }
+
+    .status-pending { background: #fef3c7; color: #b45309; }
+    .status-processing { background: #e0f2fe; color: #0369a1; }
+    .status-shipped { background: #ede9fe; color: #6d28d9; }
+    .status-delivered { background: #dcfce7; color: #15803d; }
+    .status-cancelled { background: #fee2e2; color: #b91c1c; }
+
+    /* Flash Messages */
+    .dash-alert {
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius);
+      margin-bottom: 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      font-size: 0.9rem;
+      font-weight: 600;
+    }
+    .dash-alert-success { background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; }
+    .dash-alert-error { background: #fee2e2; color: #b91c1c; border: 1px solid #fecaca; }
+
+    @media (max-width: 992px) {
+      .dash-sidebar { transform: translateX(-100%); }
+      .dash-sidebar.open { transform: translateX(0); }
+      .dash-wrapper { margin-left: 0; }
+    }
+  </style>
+  {% block extra_head %}{% endblock %}
+</head>
+<body>
+
+  <!-- Left Sidebar -->
+  <aside class="dash-sidebar" id="dashSidebar">
+    <a href="{% url 'dashboard:home' %}" class="dash-brand">
+      <div class="dash-brand-icon">
+        <i class="ri-leaf-fill"></i>
+      </div>
+      <div>
+        <div class="dash-brand-title">Veg<span>ist</span></div>
+        <div class="dash-brand-badge">Organic Supermarket</div>
+      </div>
+    </a>
+
+    <!-- Logged-in Admin User Profile Box in Sidebar -->
+    <div class="dash-user-card">
+      <div class="dash-user-avatar">
+        {% if request.user.first_name %}
+          {{ request.user.first_name|make_list|first|upper }}
+        {% else %}
+          {{ request.user.username|make_list|first|upper }}
+        {% endif %}
+        <span class="user-online-dot" title="Authenticated & Active"></span>
+      </div>
+      <div class="dash-user-details">
+        <div class="dash-user-greeting">Logged In Admin</div>
+        <div class="dash-user-name" title="{% if request.user.get_full_name %}{{ request.user.get_full_name }}{% elif request.user.first_name %}{{ request.user.first_name }}{% elif request.user.username|length > 2 %}{{ request.user.username|capfirst }}{% else %}{{ request.user.email }}{% endif %}">
+          {% if request.user.get_full_name %}
+            {{ request.user.get_full_name }}
+          {% elif request.user.first_name %}
+            {{ request.user.first_name }}
+          {% elif request.user.username|length > 2 %}
+            {{ request.user.username|capfirst }}
+          {% elif request.user.email %}
+            {{ request.user.email }}
+          {% else %}
+            Admin User
+          {% endif %}
+        </div>
+        <div class="dash-user-role">
+          <i class="ri-shield-check-fill"></i>
+          {% if request.user.is_superuser %}Master Admin{% elif request.user.is_staff %}Store Staff{% else %}User{% endif %}
+        </div>
+      </div>
+    </div>
+
+    <div class="dash-nav">
+      <div class="dash-nav-header">Main Menu</div>
+      <a href="{% url 'dashboard:home' %}" class="dash-nav-link {% if active_menu == 'dashboard' %}active{% endif %}">
+        <i class="ri-dashboard-3-line"></i>
+        <span>Dashboard</span>
+      </a>
+      <a href="{% url 'dashboard:products_list' %}" class="dash-nav-link {% if active_menu == 'products' %}active{% endif %}">
+        <i class="ri-shopping-basket-line"></i>
+        <span>Products Catalog</span>
+      </a>
+      <a href="{% url 'dashboard:orders_list' %}" class="dash-nav-link {% if active_menu == 'orders' %}active{% endif %}">
+        <i class="ri-file-list-3-line"></i>
+        <span>Customer Orders</span>
+      </a>
+      <a href="{% url 'dashboard:categories_list' %}" class="dash-nav-link {% if active_menu == 'categories' %}active{% endif %}">
+        <i class="ri-folders-line"></i>
+        <span>Categories</span>
+      </a>
+
+      <div class="dash-nav-header">Store Management</div>
+      <a href="{% url 'dashboard:customers_list' %}" class="dash-nav-link {% if active_menu == 'customers' %}active{% endif %}">
+        <i class="ri-group-line"></i>
+        <span>Users & Customers</span>
+      </a>
+      <a href="{% url 'dashboard:coupons_list' %}" class="dash-nav-link {% if active_menu == 'coupons' %}active{% endif %}">
+        <i class="ri-coupon-3-line"></i>
+        <span>Promo Coupons</span>
+      </a>
+      <a href="{% url 'dashboard:reviews_list' %}" class="dash-nav-link {% if active_menu == 'reviews' %}active{% endif %}">
+        <i class="ri-star-line"></i>
+        <span>Reviews & Ratings</span>
+      </a>
+
+      <div class="dash-nav-header">Storefront & Account</div>
+      <a href="{% url 'accounts:profile' %}" class="dash-nav-link">
+        <i class="ri-user-smile-line"></i>
+        <span>User Account Page</span>
+      </a>
+      <a href="{% url 'store:home' %}" target="_blank" class="dash-nav-link">
+        <i class="ri-external-link-line"></i>
+        <span>View Public Store</span>
+      </a>
+      <a href="/admin/" target="_blank" class="dash-nav-link">
+        <i class="ri-shield-keyhole-line"></i>
+        <span>Django Core Admin</span>
+      </a>
+    </div>
+
+    <div class="dash-sidebar-footer">
+      <div style="display: flex; align-items: center; gap: 0.5rem; min-width: 0;">
+        <span class="user-online-dot" style="position: static; display: inline-block;"></span>
+        <div style="font-size: 0.78rem; color: #94a3b8; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; max-width: 150px;">
+          {{ request.user.email|default:request.user.username }}
+        </div>
+      </div>
+      <a href="{% url 'accounts:logout' %}" style="color: #ef4444; font-size: 1.15rem; display: flex; align-items: center;" title="Sign Out">
+        <i class="ri-logout-box-r-line"></i>
+      </a>
+    </div>
+  </aside>
+
+  <!-- Right Dashboard Content -->
+  <div class="dash-wrapper">
+    <!-- Header -->
+    <header class="dash-header">
+      <div style="display: flex; align-items: center; gap: 1rem;">
+        <button type="button" class="dash-menu-toggle" onclick="document.getElementById('dashSidebar').classList.toggle('open')" aria-label="Toggle Navigation">
+          <i class="ri-menu-line"></i>
+        </button>
+        <h1 class="dash-header-title">
+          {% block page_title %}<i class="ri-dashboard-3-fill" style="color: var(--primary);"></i> Vegist Store Overview{% endblock %}
+        </h1>
+      </div>
+
+      <div class="dash-header-actions">
+        <a href="{% url 'store:home' %}" class="btn-storefront" target="_blank" title="View live storefront">
+          <i class="ri-store-2-line"></i> Storefront
+        </a>
+
+        <!-- Prominent Logged-In User Profile Pill -->
+        <div class="dash-header-user">
+          <div class="admin-avatar">
+            {% if request.user.first_name %}
+              {{ request.user.first_name|make_list|first|upper }}
+            {% else %}
+              {{ request.user.username|make_list|first|upper }}
+            {% endif %}
+            <span class="user-online-dot"></span>
+          </div>
+          <div class="dash-header-user-info">
+            <div class="dash-header-user-label">
+              <i class="ri-shield-user-fill" style="color: var(--primary);"></i>
+              <span>Logged In:</span>
+            </div>
+            <div class="dash-header-user-name" title="{% if request.user.get_full_name %}{{ request.user.get_full_name }}{% elif request.user.first_name %}{{ request.user.first_name }}{% elif request.user.username|length > 2 %}{{ request.user.username|capfirst }}{% else %}{{ request.user.email }}{% endif %}">
+              {% if request.user.get_full_name %}
+                {{ request.user.get_full_name }}
+              {% elif request.user.first_name %}
+                {{ request.user.first_name }}
+              {% elif request.user.username|length > 2 %}
+                {{ request.user.username|capfirst }}
+              {% elif request.user.email %}
+                {{ request.user.email }}
+              {% else %}
+                Admin User
+              {% endif %}
+            </div>
+          </div>
+          <div class="dash-header-user-actions">
+            <a href="{% url 'accounts:profile' %}" class="dash-user-action-btn" title="View & Edit User Account Profile">
+              <i class="ri-user-3-line"></i> Profile
+            </a>
+            <a href="{% url 'accounts:logout' %}" class="dash-user-action-btn logout" title="Sign Out of Admin Dashboard">
+              <i class="ri-logout-box-r-line"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Main Content Area -->
+    <main class="dash-main">
+      {% if messages %}
+        {% for message in messages %}
+          <div class="dash-alert dash-alert-{{ message.tags|default:'success' }}">
+            <i class="ri-checkbox-circle-fill"></i>
+            <span>{{ message }}</span>
+          </div>
+        {% endfor %}
+      {% endif %}
+
+      {% block content %}{% endblock %}
+    </main>
+  </div>
+
+  {% block extra_js %}{% endblock %}
+</body>
+</html>

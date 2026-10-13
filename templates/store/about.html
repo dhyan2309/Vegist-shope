@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Our Story & Mission - Vegist Organic Supermarket{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 3rem; padding-bottom: 5rem;">
+  <div style="max-width: 860px; margin: 0 auto; text-align: center; margin-bottom: 4rem;">
+    <span style="color: var(--primary); font-weight: 800; font-size: 0.85rem; text-transform: uppercase; letter-spacing: 1.5px; display: block; margin-bottom: 0.5rem;">
+      Regenerative Agriculture & True Organic Living
+    </span>
+    <h1 style="font-size: 2.8rem; font-weight: 800; color: var(--dark); line-height: 1.2; margin-bottom: 1.5rem;">
+      From Certified Family Farms Straight to Your Kitchen in 12 Hours
+    </h1>
+    <p style="font-size: 1.15rem; color: var(--gray-600); line-height: 1.8;">
+      Vegist was founded with a singular conviction: real food grown in nutrient-dense living soil without chemical pesticides tastes incomparable and revitalizes human wellbeing.
+    </p>
+  </div>
+
+  <div style="border-radius: var(--radius-xl); overflow: hidden; margin-bottom: 4rem; box-shadow: var(--shadow-md);">
+    <img src="{% static 'images/hero_banner.jpg' %}" alt="Our organic farm harvest" style="width: 100%; height: 440px; object-fit: cover;">
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 2.5rem; margin-bottom: 4rem;">
+    <div style="background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: 2rem; text-align: center;">
+      <div style="width: 60px; height: 60px; border-radius: var(--radius-full); background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1.25rem;">
+        <i class="ri-plant-fill"></i>
+      </div>
+      <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 0.5rem;">100% Pesticide Free</h3>
+      <p style="font-size: 0.9rem; color: var(--gray-600);">We test every single crop batch for over 400 common agricultural chemical residues.</p>
+    </div>
+
+    <div style="background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: 2rem; text-align: center;">
+      <div style="width: 60px; height: 60px; border-radius: var(--radius-full); background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1.25rem;">
+        <i class="ri-community-line"></i>
+      </div>
+      <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 0.5rem;">50+ Partner Farms</h3>
+      <p style="font-size: 0.9rem; color: var(--gray-600);">Direct fair-trade contracts that pay farmers 35% above conventional wholesale prices.</p>
+    </div>
+
+    <div style="background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: 2rem; text-align: center;">
+      <div style="width: 60px; height: 60px; border-radius: var(--radius-full); background: var(--primary-light); color: var(--primary); display: flex; align-items: center; justify-content: center; font-size: 1.8rem; margin: 0 auto 1.25rem;">
+        <i class="ri-recycle-fill"></i>
+      </div>
+      <h3 style="font-size: 1.2rem; font-weight: 800; margin-bottom: 0.5rem;">Zero Plastic Loop</h3>
+      <p style="font-size: 0.9rem; color: var(--gray-600);">Our insulated vegetable boxes and cornstarch produce sleeves decompose naturally.</p>
+    </div>
+  </div>
+</div>
+{% endblock %}

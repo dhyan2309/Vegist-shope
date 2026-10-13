@@ -1,0 +1,267 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Dashboard Overview{% endblock %}
+{% block page_title %}<i class="ri-dashboard-3-fill" style="color: var(--primary);"></i> Vegist Store Overview{% endblock %}
+
+{% block content %}
+<!-- Logged-in Admin User Welcome Banner -->
+<div class="dash-welcome-card">
+  <div class="dash-welcome-left">
+    <div class="dash-welcome-avatar">
+      {% if request.user.first_name %}
+        {{ request.user.first_name|make_list|first|upper }}
+      {% else %}
+        {{ request.user.username|make_list|first|upper }}
+      {% endif %}
+    </div>
+    <div>
+      <div class="dash-welcome-tag">
+        <i class="ri-checkbox-circle-fill"></i> Logged In Administrator
+      </div>
+      <h2 class="dash-welcome-title">
+        Welcome back, {% if request.user.get_full_name %}{{ request.user.get_full_name }}{% elif request.user.first_name %}{{ request.user.first_name }}{% elif request.user.username|length > 2 %}{{ request.user.username|capfirst }}{% elif request.user.email %}{{ request.user.email }}{% else %}Administrator{% endif %}! 👋
+      </h2>
+      <div class="dash-welcome-meta">
+        <span><i class="ri-user-smile-line"></i> Username: <strong>@{{ request.user.username }}</strong></span>
+        <span class="meta-dot">•</span>
+        <span><i class="ri-mail-line"></i> <strong>{{ request.user.email }}</strong></span>
+        <span class="meta-dot">•</span>
+        <span><i class="ri-shield-star-line"></i> Role: <strong>{% if request.user.is_superuser %}Master Superadmin{% elif request.user.is_staff %}Store Manager{% else %}Staff{% endif %}</strong></span>
+        <span class="meta-dot">•</span>
+        <span><i class="ri-calendar-event-line"></i> {% now "l, d F Y" %}</span>
+      </div>
+    </div>
+  </div>
+  <div class="dash-welcome-actions">
+    <a href="{% url 'accounts:profile' %}" class="btn btn-outline" style="border-color: rgba(255,255,255,0.4); color: #fff; background: rgba(255,255,255,0.1); font-size: 0.85rem; font-weight: 700; text-decoration: none; padding: 0.55rem 1rem; border-radius: var(--radius); display: inline-flex; align-items: center; gap: 0.35rem;">
+      <i class="ri-user-settings-line"></i> My Profile
+    </a>
+    <a href="{% url 'dashboard:product_add' %}" class="btn" style="background: #fff; color: #15803d; font-size: 0.85rem; font-weight: 800; text-decoration: none; padding: 0.55rem 1.15rem; box-shadow: 0 4px 12px rgba(0,0,0,0.15); border-radius: var(--radius); display: inline-flex; align-items: center; gap: 0.35rem;">
+      <i class="ri-add-circle-fill"></i> Add Product
+    </a>
+  </div>
+</div>
+
+<!-- Metric Stat Cards -->
+<div class="stat-grid">
+  <!-- Card 1: Revenue -->
+  <div class="stat-card" style="--card-accent: #16a34a; --icon-bg: #dcfce7; --icon-color: #15803d;">
+    <div>
+      <div class="stat-label">Total Revenue</div>
+      <div class="stat-value">₹{{ total_revenue }}</div>
+      <div class="stat-sub">
+        <i class="ri-arrow-up-circle-fill" style="color: #16a34a;"></i>
+        <span>Settled from live orders</span>
+      </div>
+    </div>
+    <div class="stat-icon">
+      <i class="ri-funds-box-line"></i>
+    </div>
+  </div>
+
+  <!-- Card 2: Orders -->
+  <div class="stat-card" style="--card-accent: #0284c7; --icon-bg: #e0f2fe; --icon-color: #0284c7;">
+    <div>
+      <div class="stat-label">Total Orders</div>
+      <div class="stat-value">{{ total_orders }}</div>
+      <div class="stat-sub">
+        <span style="font-weight: 700; color: #b45309;">{{ pending_orders_count }} pending delivery</span>
+      </div>
+    </div>
+    <div class="stat-icon">
+      <i class="ri-shopping-bag-3-line"></i>
+    </div>
+  </div>
+
+  <!-- Card 3: Products -->
+  <div class="stat-card" style="--card-accent: #d97706; --icon-bg: #fef3c7; --icon-color: #d97706;">
+    <div>
+      <div class="stat-label">Produce Catalog</div>
+      <div class="stat-value">{{ total_products }}</div>
+      <div class="stat-sub">
+        {% if low_stock_count > 0 %}
+          <span style="color: #dc2626; font-weight: 700;"><i class="ri-alarm-warning-line"></i> {{ low_stock_count }} items low stock</span>
+        {% else %}
+          <span style="color: #16a34a;"><i class="ri-checkbox-circle-line"></i> All inventory healthy</span>
+        {% endif %}
+      </div>
+    </div>
+    <div class="stat-icon">
+      <i class="ri-seedling-line"></i>
+    </div>
+  </div>
+
+  <!-- Card 4: Customers -->
+  <div class="stat-card" style="--card-accent: #8b5cf6; --icon-bg: #ede9fe; --icon-color: #8b5cf6;">
+    <div>
+      <div class="stat-label">Verified Customers</div>
+      <div class="stat-value">{{ total_customers }}</div>
+      <div class="stat-sub">
+        <span>Across organic harvest regions</span>
+      </div>
+    </div>
+    <div class="stat-icon">
+      <i class="ri-user-heart-line"></i>
+    </div>
+  </div>
+</div>
+
+<!-- Quick Actions Banner -->
+<div class="dash-card" style="background: linear-gradient(135deg, #15803d 0%, #16a34a 100%); color: #fff; padding: 1.5rem 2rem; display: flex; align-items: center; justify-content: space-between; flex-wrap: gap: 1rem;">
+  <div>
+    <h3 style="font-size: 1.3rem; font-weight: 800; font-family: 'Outfit', sans-serif; margin-bottom: 0.25rem;">Quick Store Management</h3>
+    <p style="font-size: 0.9rem; opacity: 0.9; margin: 0;">Add new organic harvests, track pending shipments, and manage promotional vouchers.</p>
+  </div>
+  <div style="display: flex; gap: 0.75rem; flex-wrap: wrap;">
+    <a href="{% url 'dashboard:product_add' %}" class="btn" style="background: #fff; color: var(--primary); font-weight: 800; border-radius: var(--radius); padding: 0.6rem 1.25rem; font-size: 0.9rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;">
+      <i class="ri-add-circle-fill"></i> Add Product
+    </a>
+    <a href="{% url 'dashboard:orders_list' %}" class="btn" style="background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); font-weight: 700; border-radius: var(--radius); padding: 0.6rem 1.25rem; font-size: 0.9rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;">
+      <i class="ri-file-list-3-line"></i> View Orders
+    </a>
+    <a href="{% url 'dashboard:coupons_list' %}" class="btn" style="background: rgba(255,255,255,0.2); color: #fff; border: 1px solid rgba(255,255,255,0.4); font-weight: 700; border-radius: var(--radius); padding: 0.6rem 1.25rem; font-size: 0.9rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem;">
+      <i class="ri-coupon-line"></i> Promo Coupons
+    </a>
+  </div>
+</div>
+
+<!-- Two-Column Grid: Recent Orders & Inventory / Categories -->
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: start;">
+  <!-- Recent Orders Table -->
+  <div class="dash-card">
+    <div class="dash-card-header">
+      <div class="dash-card-title">
+        <i class="ri-time-line" style="color: var(--primary);"></i>
+        <span>Recent Customer Orders</span>
+      </div>
+      <a href="{% url 'dashboard:orders_list' %}" style="font-size: 0.85rem; color: var(--primary); font-weight: 700; text-decoration: none;">
+        View All Orders &rarr;
+      </a>
+    </div>
+
+    {% if recent_orders %}
+      <div style="overflow-x: auto;">
+        <table class="dash-table">
+          <thead>
+            <tr>
+              <th>Order ID</th>
+              <th>Customer</th>
+              <th>Date</th>
+              <th>Payment</th>
+              <th>Total</th>
+              <th>Status</th>
+              <th style="text-align: right;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for o in recent_orders %}
+              <tr>
+                <td style="font-weight: 700; color: var(--dark);">
+                  #{{ o.order_number }}
+                </td>
+                <td>
+                  <div style="font-weight: 600;">{{ o.first_name }} {{ o.last_name }}</div>
+                  <div style="font-size: 0.78rem; color: var(--gray-500);">{{ o.email }}</div>
+                </td>
+                <td style="color: var(--gray-600); font-size: 0.85rem;">
+                  {{ o.created_at|date:"M d, H:i" }}
+                </td>
+                <td>
+                  <span style="font-size: 0.78rem; text-transform: uppercase; font-weight: 700; background: var(--gray-100); padding: 0.2rem 0.5rem; border-radius: 4px;">
+                    {{ o.payment_method }}
+                  </span>
+                </td>
+                <td style="font-weight: 800; color: var(--primary);">
+                  ₹{{ o.total }}
+                </td>
+                <td>
+                  <span class="status-badge status-{{ o.status }}">
+                    {{ o.get_status_display }}
+                  </span>
+                </td>
+                <td style="text-align: right;">
+                  <a href="{% url 'dashboard:order_detail' o.order_number %}" class="btn" style="background: var(--primary-light); color: var(--primary); font-size: 0.8rem; font-weight: 700; padding: 0.35rem 0.75rem; border-radius: 6px; text-decoration: none;">
+                    Manage
+                  </a>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+    {% else %}
+      <div style="text-align: center; padding: 3rem 1rem; color: var(--gray-500);">
+        <i class="ri-inbox-line" style="font-size: 3rem; color: var(--gray-300); margin-bottom: 0.5rem; display: block;"></i>
+        No orders placed yet. Orders placed by customers will appear here in real time.
+      </div>
+    {% endif %}
+  </div>
+
+  <!-- Right Column: Low Stock Warning & Top Categories -->
+  <div>
+    <!-- Low Stock Warning Box -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <div class="dash-card-title">
+          <i class="ri-alarm-warning-fill" style="color: #dc2626;"></i>
+          <span>Low Stock Inventory</span>
+        </div>
+        <a href="{% url 'dashboard:products_list' %}?stock=low" style="font-size: 0.85rem; color: var(--primary); font-weight: 700; text-decoration: none;">
+          View All
+        </a>
+      </div>
+
+      {% if low_stock_products %}
+        <div style="display: flex; flex-direction: column; gap: 0.75rem;">
+          {% for p in low_stock_products %}
+            <div style="display: flex; align-items: center; justify-content: space-between; padding: 0.5rem 0; border-bottom: 1px solid var(--gray-100);">
+              <div>
+                <a href="{% url 'dashboard:product_edit' p.id %}" style="font-weight: 700; font-size: 0.88rem; color: var(--dark); text-decoration: none;">
+                  {{ p.name }}
+                </a>
+                <div style="font-size: 0.75rem; color: var(--gray-500);">{{ p.category.name }} | ₹{{ p.price }}</div>
+              </div>
+              <div style="text-align: right;">
+                <span style="font-weight: 800; font-size: 0.85rem; color: #dc2626; background: #fee2e2; padding: 0.2rem 0.5rem; border-radius: 4px;">
+                  {{ p.stock }} left
+                </span>
+              </div>
+            </div>
+          {% endfor %}
+        </div>
+      {% else %}
+        <p style="font-size: 0.85rem; color: #15803d; margin: 0;">
+          <i class="ri-checkbox-circle-fill"></i> All organic products are well stocked!
+        </p>
+      {% endif %}
+    </div>
+
+    <!-- Category Distribution -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <div class="dash-card-title">
+          <i class="ri-pie-chart-line" style="color: var(--primary);"></i>
+          <span>Harvest Categories</span>
+        </div>
+        <a href="{% url 'dashboard:categories_list' %}" style="font-size: 0.85rem; color: var(--primary); font-weight: 700; text-decoration: none;">
+          Manage
+        </a>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.85rem;">
+        {% for cat in top_categories %}
+          <div>
+            <div style="display: flex; justify-content: space-between; font-size: 0.88rem; font-weight: 600; margin-bottom: 0.35rem;">
+              <span>{{ cat.name }}</span>
+              <span style="color: var(--gray-500);">{{ cat.prod_count }} products</span>
+            </div>
+            <div style="height: 6px; background: var(--gray-100); border-radius: 9999px; overflow: hidden;">
+              <div style="height: 100%; width: {% widthratio cat.prod_count total_products 100 %}%; background: var(--primary); border-radius: 9999px;"></div>
+            </div>
+          </div>
+        {% endfor %}
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

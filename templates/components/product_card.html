@@ -1,0 +1,90 @@
+{% load static %}
+<div class="product-card">
+  <div class="product-thumb-wrap">
+    {% if product.stock == 0 %}
+      <span class="product-badge" style="background: #ef4444; color: #fff; font-weight: 800;">
+        OUT OF STOCK
+      </span>
+    {% elif product.badge %}
+      <span class="product-badge {% if 'OFF' in product.badge or 'HOT' in product.badge %}badge-danger{% elif 'ORGANIC' in product.badge %}badge-organic{% else %}badge-amber{% endif %}">
+        {{ product.badge }}
+      </span>
+    {% elif product.discount_percent > 0 %}
+      <span class="product-badge badge-danger">
+        -{{ product.discount_percent }}% OFF
+      </span>
+    {% elif product.is_organic %}
+      <span class="product-badge badge-organic">
+        100% ORGANIC
+      </span>
+    {% endif %}
+
+    <div class="product-card-actions">
+      <button type="button" class="action-btn-circle js-toggle-wishlist {% if product.id in wishlist_ids %}active{% endif %}" data-product-id="{{ product.id }}" title="Wishlist" aria-label="Toggle wishlist for {{ product.name }}">
+        <i class="{% if product.id in wishlist_ids %}ri-heart-fill{% else %}ri-heart-line{% endif %}"></i>
+      </button>
+      <button type="button" class="action-btn-circle js-quick-view" data-product-id="{{ product.id }}" title="Quick View" aria-label="Quick view for {{ product.name }}">
+        <i class="ri-eye-line"></i>
+      </button>
+    </div>
+
+    <a href="{{ product.get_absolute_url }}" class="product-img-link">
+      {% if product.image %}
+        <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+      {% else %}
+        <img src="{% static 'images/cat_vegetables.jpg' %}" alt="{{ product.name }}" loading="lazy">
+      {% endif %}
+    </a>
+  </div>
+
+  <div class="product-body">
+    <a href="{{ product.category.get_absolute_url }}" class="product-category-tag">{{ product.category.name }}</a>
+    <h3 class="product-title">
+      <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+    </h3>
+
+    <div class="product-rating">
+      <div class="stars" title="{{ product.rating }} out of 5 stars">
+        <i class="ri-star-fill"></i>
+        <i class="ri-star-fill"></i>
+        <i class="ri-star-fill"></i>
+        <i class="ri-star-fill"></i>
+        {% if product.rating >= 4.8 %}
+          <i class="ri-star-fill"></i>
+        {% elif product.rating >= 4.3 %}
+          <i class="ri-star-half-fill"></i>
+        {% else %}
+          <i class="ri-star-line"></i>
+        {% endif %}
+      </div>
+      <span class="rating-count">({{ product.reviews_count }})</span>
+    </div>
+
+    <div class="product-meta-row">
+      <span class="product-unit-badge">{{ product.unit }}</span>
+      {% if product.stock == 0 %}
+        <span class="stock-urgency-badge" style="background: #fee2e2; color: #b91c1c;"><i class="ri-close-circle-fill"></i> Sold Out</span>
+      {% elif product.stock > 0 and product.stock <= 10 %}
+        <span class="stock-urgency-badge"><i class="ri-fire-fill"></i> Only {{ product.stock }} left!</span>
+      {% endif %}
+    </div>
+
+    <div class="product-footer">
+      <div class="product-prices">
+        <span class="product-price">₹{{ product.price }}</span>
+        {% if product.old_price %}
+          <span class="product-old-price">₹{{ product.old_price }}</span>
+        {% endif %}
+      </div>
+      {% if product.stock == 0 %}
+        <button type="button" class="add-cart-btn" disabled style="opacity: 0.6; cursor: not-allowed; background: var(--gray-300); color: var(--gray-700);" aria-label="{{ product.name }} is out of stock">
+          <i class="ri-close-line"></i> Sold Out
+        </button>
+      {% else %}
+        <button type="button" class="add-cart-btn js-add-to-cart" data-product-id="{{ product.id }}" aria-label="Add {{ product.name }} to cart">
+          <i class="ri-add-line"></i> Add
+        </button>
+      {% endif %}
+    </div>
+  </div>
+</div>

@@ -1,0 +1,167 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shopping Cart - Vegist Organic Supermarket{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2.5rem; padding-bottom: 5rem;">
+  <div class="section-title-wrap">
+    <div>
+      <h1 class="section-title">My Farm Cart</h1>
+      <p class="section-subtitle">Review your fresh organic items before proceeding to checkout</p>
+    </div>
+  </div>
+
+  {% if cart|length > 0 %}
+    <!-- Free Shipping Progress -->
+    <div style="background-color: var(--primary-subtle); border: 1px solid #bbf7d0; border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 2rem;">
+      <div style="font-size: 0.95rem; color: var(--primary); margin-bottom: 0.5rem; font-weight: 600;">
+        {% if free_shipping_remaining <= 0 %}
+          <i class="ri-checkbox-circle-fill"></i> You unlocked <strong>FREE SHIPPING</strong>!
+        {% else %}
+          Add <strong>₹{{ free_shipping_remaining }}</strong> more to get <strong>FREE SHIPPING</strong>!
+        {% endif %}
+      </div>
+      <div class="cart-shipping-track" style="height: 8px;">
+        <div class="cart-shipping-fill" style="width: {{ free_shipping_progress }}%;"></div>
+      </div>
+    </div>
+
+    <div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2.5rem; align-items: start;">
+      <!-- Left: Cart Items Table -->
+      <div style="background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); overflow: hidden; box-shadow: var(--shadow-sm);">
+        <table style="width: 100%; border-collapse: collapse;">
+          <thead>
+            <tr style="background-color: var(--gray-50); border-bottom: 1px solid var(--gray-200); text-align: left; font-size: 0.85rem; color: var(--gray-600); text-transform: uppercase;">
+              <th style="padding: 1rem 1.5rem;">Produce</th>
+              <th style="padding: 1rem;">Price</th>
+              <th style="padding: 1rem; text-align: center;">Quantity</th>
+              <th style="padding: 1rem; text-align: right;">Subtotal</th>
+              <th style="padding: 1rem 1.5rem; text-align: center;">Action</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for item in cart %}
+              <tr style="border-bottom: 1px solid var(--gray-100);">
+                <td style="padding: 1.25rem 1.5rem;">
+                  <div style="display: flex; align-items: center; gap: 1rem;">
+                    <div style="width: 70px; height: 70px; border-radius: var(--radius); overflow: hidden; background: var(--gray-50); border: 1px solid var(--gray-200); flex-shrink: 0;">
+                      {% if item.product.image %}
+                        <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                      {% else %}
+                        <img src="{% static 'images/cat_vegetables.jpg' %}" alt="{{ item.product.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                      {% endif %}
+                    </div>
+                    <div>
+                      <a href="{{ item.product.get_absolute_url }}" style="font-weight: 700; color: var(--dark); font-size: 0.95rem; display: block; margin-bottom: 0.25rem;">
+                        {{ item.product.name }}
+                      </a>
+                      <span style="font-size: 0.8rem; color: var(--gray-500);">Pack: {{ item.product.unit }}</span>
+                    </div>
+                  </div>
+                </td>
+                <td style="padding: 1.25rem 1rem; font-weight: 600; color: var(--dark);">
+                  ₹{{ item.price }}
+                </td>
+                <td style="padding: 1.25rem 1rem; text-align: center;">
+                  <div class="cart-qty-stepper">
+                    <form action="{% url 'cart:cart_decrement' item.product.id %}" method="POST" style="display:inline;">
+                      {% csrf_token %}
+                      <button type="submit" class="qty-btn"><i class="ri-subtract-line"></i></button>
+                    </form>
+                    <span class="qty-val">{{ item.quantity }}</span>
+                    <form action="{% url 'cart:cart_add' item.product.id %}" method="POST" style="display:inline;">
+                      {% csrf_token %}
+                      <input type="hidden" name="quantity" value="1">
+                      <button type="submit" class="qty-btn"><i class="ri-add-line"></i></button>
+                    </form>
+                  </div>
+                </td>
+                <td style="padding: 1.25rem 1rem; text-align: right; font-weight: 800; color: var(--primary);">
+                  ₹{{ item.total_price }}
+                </td>
+                <td style="padding: 1.25rem 1.5rem; text-align: center;">
+                  <form action="{% url 'cart:cart_remove' item.product.id %}" method="POST">
+                    {% csrf_token %}
+                    <button type="submit" style="background: none; border: none; color: var(--gray-400); cursor: pointer; font-size: 1.2rem; transition: var(--transition);" onmouseover="this.style.color='var(--danger)'" onmouseout="this.style.color='var(--gray-400)'">
+                      <i class="ri-delete-bin-line"></i>
+                    </button>
+                  </form>
+                </td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <!-- Coupon Bar -->
+        <div style="padding: 1.5rem; background-color: var(--gray-50); border-top: 1px solid var(--gray-200); display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;">
+          <form action="{% url 'cart:apply_coupon' %}" method="POST" style="display: flex; gap: 0.5rem;">
+            {% csrf_token %}
+            <input type="text" name="coupon_code" placeholder="Coupon Code (e.g. VEGIST20)" style="padding: 0.6rem 1rem; border: 1px solid var(--gray-300); border-radius: var(--radius-full); font-size: 0.85rem; text-transform: uppercase;">
+            <button type="submit" class="btn btn-primary" style="padding: 0.6rem 1.25rem; font-size: 0.85rem;">Apply Coupon</button>
+          </form>
+
+          <a href="{% url 'store:shop' %}" class="btn btn-outline" style="border-color: var(--gray-300); color: var(--dark); padding: 0.6rem 1.25rem; font-size: 0.85rem;">
+            <i class="ri-arrow-left-line"></i> Continue Shopping
+          </a>
+        </div>
+      </div>
+
+      <!-- Right: Summary Card -->
+      <div style="background: #fff; border: 1px solid var(--gray-200); border-radius: var(--radius-xl); padding: 2rem; box-shadow: var(--shadow-sm);">
+        <h3 style="font-size: 1.25rem; font-weight: 800; color: var(--dark); margin-bottom: 1.5rem; border-bottom: 1px solid var(--gray-200); padding-bottom: 1rem;">
+          Order Summary
+        </h3>
+
+        <div style="display: flex; flex-direction: column; gap: 1rem; font-size: 0.95rem; margin-bottom: 1.5rem;">
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--gray-600);">Produce Subtotal:</span>
+            <span style="font-weight: 700; color: var(--dark);">₹{{ cart_subtotal }}</span>
+          </div>
+
+          {% if cart_coupon %}
+            <div style="display: flex; justify-content: space-between; color: var(--primary);">
+              <span>Promo Voucher ({{ cart_coupon.code }} -{{ cart_coupon.discount_percent }}%):</span>
+              <span style="font-weight: 700;">-₹{{ cart_discount }}</span>
+            </div>
+            <div style="font-size: 0.75rem; text-align: right;">
+              <a href="{% url 'cart:remove_coupon' %}" style="color: var(--danger); text-decoration: underline;">Remove coupon</a>
+            </div>
+          {% endif %}
+
+          <div style="display: flex; justify-content: space-between;">
+            <span style="color: var(--gray-600);">Shipping Delivery:</span>
+            {% if cart_shipping == 0 %}
+              <span style="font-weight: 700; color: var(--primary);">FREE</span>
+            {% else %}
+              <span style="font-weight: 700; color: var(--dark);">₹{{ cart_shipping }}</span>
+            {% endif %}
+          </div>
+        </div>
+
+        <div style="border-top: 2px solid var(--gray-200); padding-top: 1rem; margin-bottom: 1.75rem; display: flex; justify-content: space-between; align-items: baseline;">
+          <span style="font-size: 1.2rem; font-weight: 800; color: var(--dark);">Total Amount:</span>
+          <span style="font-size: 1.75rem; font-weight: 800; color: var(--primary);">₹{{ cart_total }}</span>
+        </div>
+
+        <a href="{% url 'orders:checkout' %}" class="btn btn-primary" style="width: 100%; padding: 0.9rem; font-size: 1.05rem;">
+          <i class="ri-lock-line"></i> Proceed to Checkout
+        </a>
+
+        <div style="margin-top: 1.5rem; text-align: center; font-size: 0.8rem; color: var(--gray-400);">
+          <i class="ri-shield-check-line" style="color: var(--primary);"></i> 256-Bit SSL Encrypted Checkout
+        </div>
+      </div>
+    </div>
+  {% else %}
+    <div style="text-align: center; padding: 5rem 1rem; background: #fff; border-radius: var(--radius-xl); border: 1px solid var(--gray-200);">
+      <div style="font-size: 4.5rem; color: #cbd5e1; margin-bottom: 1rem;"><i class="ri-shopping-basket-line"></i></div>
+      <h2 style="font-size: 1.6rem; color: var(--dark); margin-bottom: 0.5rem;">Your Cart is Currently Empty</h2>
+      <p style="color: var(--gray-500); margin-bottom: 2rem;">Looks like you haven't added any fresh organic produce yet.</p>
+      <a href="{% url 'store:shop' %}" class="btn btn-primary" style="padding: 0.9rem 2.2rem;">
+        <i class="ri-shopping-basket-fill"></i> Start Shopping Farm Produce
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

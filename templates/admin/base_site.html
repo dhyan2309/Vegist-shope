@@ -1,0 +1,110 @@
+{% extends "admin/base.html" %}
+{% load static %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | Vegist Admin Portal{% endblock %}
+
+{% block extrahead %}
+  {{ block.super }}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@600;700;800&family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/remixicon@4.2.0/fonts/remixicon.css" rel="stylesheet">
+  <style>
+    :root {
+      --primary-vegist: #16a34a;
+      --primary-dark: #15803d;
+      --primary-light: #f0fdf4;
+      --accent: #f59e0b;
+    }
+    #header {
+      background: linear-gradient(135deg, #15803d 0%, #16a34a 100%) !important;
+      color: #fff !important;
+      border-bottom: 3px solid #ca8a04;
+      padding: 12px 24px;
+    }
+    #branding h1 {
+      font-family: 'Outfit', sans-serif !important;
+      font-weight: 800 !important;
+      font-size: 1.35rem !important;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    #branding h1 a:link, #branding h1 a:visited {
+      color: #ffffff !important;
+      text-decoration: none;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .vegist-admin-badge {
+      background: rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(255, 255, 255, 0.35);
+      border-radius: 9999px;
+      font-size: 0.72rem;
+      padding: 2px 10px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      color: #fef08a !important;
+    }
+    .button, input[type=submit], input[type=button], .submit-row input, a.button {
+      background: var(--primary-vegist) !important;
+      border-color: var(--primary-dark) !important;
+      border-radius: 6px !important;
+      font-weight: 600 !important;
+      transition: all 0.2s ease;
+    }
+    .button:hover, input[type=submit]:hover, input[type=button]:hover {
+      background: var(--primary-dark) !important;
+    }
+    .module h2, .module caption, .inline-group h2 {
+      background: #1e293b !important;
+      color: #f8fafc !important;
+      font-weight: 700 !important;
+    }
+    #user-tools a:hover {
+      color: #fef08a !important;
+    }
+    .view-storefront-btn {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      color: #ffffff !important;
+      padding: 4px 12px;
+      border-radius: 6px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-right: 12px;
+    }
+    .view-storefront-btn:hover {
+      background: rgba(255, 255, 255, 0.28);
+      color: #ffffff !important;
+    }
+  </style>
+{% endblock %}
+
+{% block branding %}
+  <div id="branding">
+    <h1 id="site-name">
+      <a href="{% url 'admin:index' %}">
+        <i class="ri-leaf-fill" style="color: #86efac; font-size: 1.5rem;"></i>
+        <span>Vegist</span>
+        <span class="vegist-admin-badge">Admin Portal</span>
+      </a>
+    </h1>
+  </div>
+{% endblock %}
+
+{% block userlinks %}
+  <a href="{% url 'dashboard:home' %}" class="view-storefront-btn" style="background: rgba(254, 240, 138, 0.25); color: #fef08a !important; border-color: rgba(254, 240, 138, 0.45);">
+    <i class="ri-dashboard-3-fill"></i> Vegist Dashboard
+  </a>
+  <a href="{% url 'store:home' %}" class="view-storefront-btn" target="_blank">
+    <i class="ri-external-link-line"></i> View Storefront
+  </a>
+  {{ block.super }}
+{% endblock %}

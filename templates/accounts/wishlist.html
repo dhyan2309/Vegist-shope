@@ -1,0 +1,73 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}My Wishlist - Vegist Organic Supermarket{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2.5rem; padding-bottom: 5rem;">
+  <div class="section-title-wrap">
+    <div>
+      <h1 class="section-title">My Wishlist</h1>
+      <p class="section-subtitle">Your saved organic produce items ready for quick ordering</p>
+    </div>
+  </div>
+
+  {% if wishlist_items %}
+    <div class="product-grid">
+      {% for item in wishlist_items %}
+        <div class="product-card">
+          <div class="product-thumb-wrap">
+            {% if item.product.badge %}
+              <span class="product-badge badge-organic">{{ item.product.badge }}</span>
+            {% endif %}
+
+            <div class="product-card-actions">
+              <button type="button" class="action-btn-circle js-toggle-wishlist active" data-product-id="{{ item.product.id }}" title="Remove from Wishlist">
+                <i class="ri-heart-fill"></i>
+              </button>
+              <button type="button" class="action-btn-circle js-quick-view" data-product-id="{{ item.product.id }}" title="Quick View">
+                <i class="ri-eye-line"></i>
+              </button>
+            </div>
+
+            <a href="{{ item.product.get_absolute_url }}">
+              {% if item.product.image %}
+                <img src="{{ item.product.image.url }}" alt="{{ item.product.name }}">
+              {% else %}
+                <img src="{% static 'images/cat_vegetables.jpg' %}" alt="{{ item.product.name }}">
+              {% endif %}
+            </a>
+          </div>
+
+          <div class="product-body">
+            <a href="{{ item.product.category.get_absolute_url }}" class="product-category-tag">{{ item.product.category.name }}</a>
+            <h3 class="product-title">
+              <a href="{{ item.product.get_absolute_url }}">{{ item.product.name }}</a>
+            </h3>
+
+            <span class="product-unit-badge">{{ item.product.unit }}</span>
+
+            <div class="product-footer">
+              <div class="product-prices">
+                <span class="product-price">₹{{ item.product.price }}</span>
+              </div>
+              <button type="button" class="add-cart-btn js-add-to-cart" data-product-id="{{ item.product.id }}">
+                <i class="ri-shopping-basket-fill"></i> Add to Cart
+              </button>
+            </div>
+          </div>
+        </div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <div style="text-align: center; padding: 5rem 1rem; background: #fff; border-radius: var(--radius-xl); border: 1px solid var(--gray-200);">
+      <div style="font-size: 4rem; color: #cbd5e1; margin-bottom: 1rem;"><i class="ri-heart-line"></i></div>
+      <h2 style="font-size: 1.5rem; color: var(--dark); margin-bottom: 0.5rem;">Your Wishlist is Empty</h2>
+      <p style="color: var(--gray-500); margin-bottom: 2rem;">Save your favorite farm vegetables, seasonal fruits, and raw juices by clicking the heart icon on any product.</p>
+      <a href="{% url 'store:shop' %}" class="btn btn-primary" style="padding: 0.9rem 2.2rem;">
+        <i class="ri-shopping-basket-fill"></i> Browse Farm Produce
+      </a>
+    </div>
+  {% endif %}
+</div>
+{% endblock %}

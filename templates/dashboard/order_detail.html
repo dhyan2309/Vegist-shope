@@ -1,0 +1,257 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Order #{{ order.order_number }}{% endblock %}
+{% block page_title %}
+  <i class="ri-file-text-fill" style="color: var(--primary);"></i>
+  Order Details: #{{ order.order_number }}
+{% endblock %}
+
+{% block content %}
+<div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem;">
+  <a href="{% url 'dashboard:orders_list' %}" style="font-size: 0.9rem; color: var(--gray-600); font-weight: 700; text-decoration: none;">
+    &larr; Back to All Orders
+  </a>
+  <button type="button" class="btn btn-outline" onclick="window.print()" style="padding: 0.5rem 1rem; border-color: var(--gray-300); font-size: 0.85rem;">
+    <i class="ri-printer-line"></i> Print Order Receipt
+  </button>
+</div>
+
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: start;">
+  <!-- Left Column: Order Items & Customer Address -->
+  <div>
+    <!-- Order Items Card -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <div class="dash-card-title">
+          <span>Organic Produce Items ({{ order.items.count }})</span>
+        </div>
+      </div>
+
+      <table class="dash-table">
+        <thead>
+          <tr>
+            <th>Item</th>
+            <th>Pack</th>
+            <th>Unit Price</th>
+            <th>Qty</th>
+            <th style="text-align: right;">Total</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for item in order.items.all %}
+            <tr>
+              <td style="font-weight: 700; color: var(--dark);">
+                {{ item.product_name }}
+              </td>
+              <td style="color: var(--gray-500); font-size: 0.85rem;">
+                {{ item.unit }}
+              </td>
+              <td>
+                ₹{{ item.price }}
+              </td>
+              <td style="font-weight: 700;">
+                × {{ item.quantity }}
+              </td>
+              <td style="text-align: right; font-weight: 800; color: var(--primary);">
+                ₹{{ item.total_price }}
+              </td>
+            </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Customer & Shipping Card -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <div class="dash-card-title">
+          <i class="ri-map-pin-user-line" style="color: var(--primary);"></i>
+          <span>Shipping & Delivery Details</span>
+        </div>
+      </div>
+
+      <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 1.5rem; font-size: 0.9rem;">
+        <div>
+          <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: var(--gray-400); margin-bottom: 0.25rem;">Recipient</div>
+          <div style="font-weight: 700; color: var(--dark); font-size: 1rem;">{{ order.first_name }} {{ order.last_name }}</div>
+          <div style="color: var(--gray-600);"><i class="ri-phone-line"></i> {{ order.phone }}</div>
+          <div style="color: var(--gray-600);"><i class="ri-mail-line"></i> {{ order.email }}</div>
+        </div>
+
+        <div>
+          <div style="font-size: 0.75rem; text-transform: uppercase; font-weight: 800; color: var(--gray-400); margin-bottom: 0.25rem;">Delivery Destination</div>
+          <div style="color: var(--gray-700); line-height: 1.5;">
+            {{ order.address_line1 }}<br>
+            {% if order.address_line2 %}{{ order.address_line2 }}<br>{% endif %}
+            {{ order.city }}, {{ order.state }} - {{ order.postal_code }}<br>
+            <strong>{{ order.country }}</strong>
+          </div>
+        </div>
+      </div>
+
+      {% if order.order_notes %}
+        <div style="margin-top: 1.5rem; padding: 1rem; background: var(--gray-50); border-radius: var(--radius); border-left: 3px solid var(--accent); font-size: 0.88rem;">
+          <div style="font-weight: 700; color: var(--dark); margin-bottom: 0.25rem;">Delivery Instructions / Notes:</div>
+          <div style="color: var(--gray-600);">"{{ order.order_notes }}"</div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+
+  <!-- Right Column: Status Update & Summary -->
+  <div>
+    <!-- Order Status Controller -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <div class="dash-card-title">
+          <i class="ri-sound-module-line" style="color: var(--primary);"></i>
+          <span>Order Status Control</span>
+        </div>
+      </div>
+
+      <form method="POST">
+        {% csrf_token %}
+        <div style="margin-bottom: 1.5rem;">
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem;">
+            <span style="font-weight: 800; font-size: 0.8rem; color: var(--gray-500); text-transform: uppercase; letter-spacing: 0.5px;">Current Fulfillment State</span>
+            <span class="status-badge status-{{ order.status }}">{{ order.get_status_display }}</span>
+          </div>
+
+          <!-- Quick 1-Click Status State Buttons -->
+          <div class="status-action-grid">
+            <!-- Pending -->
+            <button type="submit" name="status" value="pending" class="status-action-btn status-pending {% if order.status == 'pending' %}active{% endif %}">
+              <div class="status-action-info">
+                <div class="status-action-icon">
+                  <i class="ri-time-line"></i>
+                </div>
+                <div class="status-action-text">
+                  <span class="title">Pending</span>
+                  <span class="desc">Awaiting store fulfillment</span>
+                </div>
+              </div>
+              <span class="status-current-tag"><i class="ri-check-line"></i> Current State</span>
+            </button>
+
+            <!-- Processing -->
+            <button type="submit" name="status" value="processing" class="status-action-btn status-processing {% if order.status == 'processing' %}active{% endif %}">
+              <div class="status-action-info">
+                <div class="status-action-icon">
+                  <i class="ri-archive-line"></i>
+                </div>
+                <div class="status-action-text">
+                  <span class="title">Processing</span>
+                  <span class="desc">Packing & quality inspection</span>
+                </div>
+              </div>
+              <span class="status-current-tag"><i class="ri-check-line"></i> Current State</span>
+            </button>
+
+            <!-- Shipped -->
+            <button type="submit" name="status" value="shipped" class="status-action-btn status-shipped {% if order.status == 'shipped' %}active{% endif %}">
+              <div class="status-action-info">
+                <div class="status-action-icon">
+                  <i class="ri-truck-line"></i>
+                </div>
+                <div class="status-action-text">
+                  <span class="title">Shipped</span>
+                  <span class="desc">Dispatched / out for delivery</span>
+                </div>
+              </div>
+              <span class="status-current-tag"><i class="ri-check-line"></i> Current State</span>
+            </button>
+
+            <!-- Delivered -->
+            <button type="submit" name="status" value="delivered" class="status-action-btn status-delivered {% if order.status == 'delivered' %}active{% endif %}">
+              <div class="status-action-info">
+                <div class="status-action-icon">
+                  <i class="ri-checkbox-circle-line"></i>
+                </div>
+                <div class="status-action-text">
+                  <span class="title">Delivered Fresh</span>
+                  <span class="desc">Successfully received by customer</span>
+                </div>
+              </div>
+              <span class="status-current-tag"><i class="ri-check-line"></i> Current State</span>
+            </button>
+
+            <!-- Cancelled -->
+            <button type="submit" name="status" value="cancelled" class="status-action-btn status-cancelled {% if order.status == 'cancelled' %}active{% endif %}">
+              <div class="status-action-info">
+                <div class="status-action-icon">
+                  <i class="ri-close-circle-line"></i>
+                </div>
+                <div class="status-action-text">
+                  <span class="title">Cancelled</span>
+                  <span class="desc">Order terminated or refunded</span>
+                </div>
+              </div>
+              <span class="status-current-tag"><i class="ri-check-line"></i> Current State</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Payment Status Control -->
+        <div class="payment-toggle-box">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span style="font-weight: 800; font-size: 0.8rem; text-transform: uppercase; color: var(--gray-600); letter-spacing: 0.5px;">Payment Settlement</span>
+            {% if order.is_paid %}
+              <span class="status-badge status-paid" style="font-size: 0.75rem;"><i class="ri-checkbox-circle-fill"></i> Paid</span>
+            {% else %}
+              <span class="status-badge status-unpaid" style="font-size: 0.75rem;"><i class="ri-time-line"></i> Unpaid</span>
+            {% endif %}
+          </div>
+          <div class="payment-toggle-buttons">
+            <button type="submit" name="set_paid" value="1" class="payment-pill-btn paid {% if order.is_paid %}active{% endif %}">
+              <i class="ri-checkbox-circle-fill"></i> Mark as Paid
+            </button>
+            <button type="submit" name="set_paid" value="0" class="payment-pill-btn unpaid {% if not order.is_paid %}active{% endif %}">
+              <i class="ri-time-line"></i> Mark as Unpaid
+            </button>
+          </div>
+        </div>
+      </form>
+    </div>
+
+    <!-- Order Financials Summary -->
+    <div class="dash-card">
+      <div class="dash-card-header">
+        <div class="dash-card-title">
+          <span>Order Invoice Summary</span>
+        </div>
+      </div>
+
+      <div style="display: flex; flex-direction: column; gap: 0.85rem; font-size: 0.92rem;">
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: var(--gray-600);">Produce Subtotal:</span>
+          <span style="font-weight: 700; color: var(--dark);">₹{{ order.subtotal }}</span>
+        </div>
+
+        {% if order.discount > 0 %}
+          <div style="display: flex; justify-content: space-between; color: var(--primary);">
+            <span>Coupon ({{ order.coupon_code }}):</span>
+            <span style="font-weight: 700;">-₹{{ order.discount }}</span>
+          </div>
+        {% endif %}
+
+        <div style="display: flex; justify-content: space-between;">
+          <span style="color: var(--gray-600);">Delivery Shipping:</span>
+          <span style="font-weight: 700; color: var(--dark);">
+            {% if order.shipping == 0 %}FREE{% else %}₹{{ order.shipping }}{% endif %}
+          </span>
+        </div>
+
+        <div style="border-top: 2px solid var(--gray-200); padding-top: 0.85rem; display: flex; justify-content: space-between; align-items: baseline;">
+          <span style="font-size: 1.1rem; font-weight: 800; color: var(--dark);">Grand Total:</span>
+          <span style="font-size: 1.6rem; font-weight: 800; color: var(--primary);">₹{{ order.total }}</span>
+        </div>
+      </div>
+
+      <div style="margin-top: 1.25rem; padding-top: 1rem; border-top: 1px solid var(--gray-100); font-size: 0.82rem; color: var(--gray-500);">
+        <div><strong>Payment Mode:</strong> {{ order.payment_method|upper }}</div>
+        <div><strong>Placed Date:</strong> {{ order.created_at|date:"d M Y, H:i" }}</div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

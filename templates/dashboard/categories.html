@@ -1,0 +1,120 @@
+{% extends 'dashboard/base_dashboard.html' %}
+
+{% block title %}Manage Categories{% endblock %}
+{% block page_title %}<i class="ri-folders-fill" style="color: var(--primary);"></i> Harvest Categories Management{% endblock %}
+
+{% block content %}
+<div style="display: grid; grid-template-columns: 2fr 1fr; gap: 2rem; align-items: start;">
+  <!-- Left: Categories List -->
+  <div class="dash-card">
+    <div class="dash-card-header">
+      <div class="dash-card-title">
+        <span>Active Categories ({{ categories.count }})</span>
+      </div>
+    </div>
+
+    <table class="dash-table">
+      <thead>
+        <tr>
+          <th style="width: 60px;">Image</th>
+          <th>Name</th>
+          <th>Slug</th>
+          <th>Products</th>
+          <th>Featured</th>
+          <th style="text-align: right;">Action</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for cat in categories %}
+          <tr>
+            <td>
+              <div style="width: 44px; height: 44px; border-radius: 8px; overflow: hidden; background: #f8fafc; border: 1px solid var(--gray-200);">
+                {% if cat.image %}
+                  <img src="{{ cat.image.url }}" alt="{{ cat.name }}" style="width: 100%; height: 100%; object-fit: cover;">
+                {% else %}
+                  <div style="width: 100%; height: 100%; display: flex; align-items: center; justify-content: center; color: var(--primary); font-size: 1.2rem;">
+                    <i class="{{ cat.icon|default:'ri-plant-line' }}"></i>
+                  </div>
+                {% endif %}
+              </div>
+            </td>
+            <td>
+              <div style="font-weight: 700; color: var(--dark);">{{ cat.name }}</div>
+              <div style="font-size: 0.75rem; color: var(--gray-400);"><i class="{{ cat.icon }}"></i> {{ cat.icon }}</div>
+            </td>
+            <td style="color: var(--gray-500); font-size: 0.85rem;">
+              {{ cat.slug }}
+            </td>
+            <td>
+              <span style="font-weight: 700; background: var(--gray-100); padding: 0.2rem 0.55rem; border-radius: 4px; font-size: 0.85rem;">
+                {{ cat.prod_count }} items
+              </span>
+            </td>
+            <td>
+              {% if cat.is_featured %}
+                <span style="background: #dcfce7; color: #15803d; font-weight: 800; font-size: 0.75rem; padding: 0.2rem 0.5rem; border-radius: 4px;">Featured</span>
+              {% else %}
+                <span style="color: var(--gray-400); font-size: 0.75rem;">Standard</span>
+              {% endif %}
+            </td>
+            <td style="text-align: right;">
+              <form action="{% url 'dashboard:category_delete' cat.id %}" method="POST" onsubmit="return confirm('Delete category {{ cat.name }}?');" style="display:inline;">
+                {% csrf_token %}
+                <button type="submit" class="btn" style="background: #fee2e2; color: #b91c1c; padding: 0.35rem 0.65rem; border-radius: 6px; font-size: 0.82rem; border: none; cursor: pointer;">
+                  <i class="ri-delete-bin-line"></i>
+                </button>
+              </form>
+            </td>
+          </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Right: Add Category Form -->
+  <div class="dash-card">
+    <div class="dash-card-header">
+      <div class="dash-card-title">
+        <i class="ri-add-circle-fill" style="color: var(--primary);"></i>
+        <span>Add New Category</span>
+      </div>
+    </div>
+
+    <form method="POST" enctype="multipart/form-data">
+      {% csrf_token %}
+      <div style="margin-bottom: 1.25rem;">
+        <label style="display: block; font-weight: 700; font-size: 0.88rem; margin-bottom: 0.4rem;">
+          Category Name *
+        </label>
+        <input type="text" name="name" required placeholder="e.g. Exotic Fruits" style="width: 100%; padding: 0.65rem 0.85rem; border: 1px solid var(--gray-200); border-radius: var(--radius); font-size: 0.95rem;">
+      </div>
+
+      <div style="margin-bottom: 1.25rem;">
+        <label style="display: block; font-weight: 700; font-size: 0.88rem; margin-bottom: 0.4rem;">
+          Icon Class
+        </label>
+        <input type="text" name="icon" value="ri-plant-line" placeholder="e.g. ri-apple-line, ri-goblet-line" style="width: 100%; padding: 0.65rem 0.85rem; border: 1px solid var(--gray-200); border-radius: var(--radius); font-size: 0.95rem;">
+        <div style="font-size: 0.72rem; color: var(--gray-400); margin-top: 0.2rem;">Uses RemixIcon icon classes</div>
+      </div>
+
+      <div style="margin-bottom: 1.25rem;">
+        <label style="display: block; font-weight: 700; font-size: 0.88rem; margin-bottom: 0.4rem;">
+          Category Banner / Image
+        </label>
+        <input type="file" name="image" accept="image/*" style="font-size: 0.85rem;">
+      </div>
+
+      <div style="margin-bottom: 1.5rem;">
+        <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer; font-size: 0.9rem; font-weight: 600;">
+          <input type="checkbox" name="is_featured" checked style="width: 18px; height: 18px; accent-color: var(--primary);">
+          <span>Show on Home Category Grid</span>
+        </label>
+      </div>
+
+      <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.75rem; font-weight: 800; border-radius: var(--radius);">
+        <i class="ri-add-line"></i> Create Category
+      </button>
+    </form>
+  </div>
+</div>
+{% endblock %}

@@ -1,0 +1,399 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Shop All Organic Produce - Vegist{% endblock %}
+
+{% block content %}
+<div class="container" style="padding-top: 2rem; padding-bottom: 4rem;">
+  <!-- Breadcrumb -->
+  <div style="font-size: 0.85rem; color: var(--gray-500); margin-bottom: 1.5rem; display: flex; align-items: center; gap: 0.5rem;">
+    <a href="{% url 'store:home' %}"><i class="ri-home-4-line"></i> Home</a>
+    <span>/</span>
+    <a href="{% url 'store:shop' %}">Shop</a>
+    {% if category %}
+      <span>/</span>
+      <span style="color: var(--primary); font-weight: 700;">{{ category.name }}</span>
+    {% endif %}
+  </div>
+
+  <div class="shop-layout">
+    <!-- Filter Sidebar -->
+    <aside class="filter-sidebar">
+      <form id="filter-form" action="{% if category %}{% url 'store:shop_category' category.slug %}{% else %}{% url 'store:shop' %}{% endif %}" method="GET">
+        <!-- Preserve search query & sort -->
+        {% if query %}
+          <input type="hidden" name="q" value="{{ query }}">
+        {% endif %}
+        {% if current_sort %}
+          <input type="hidden" name="sort" value="{{ current_sort }}">
+        {% endif %}
+
+        <!-- Widget 1: Categories -->
+        <div class="filter-widget">
+          <div class="filter-title">
+            <span>Aisles & Categories</span>
+          </div>
+          <ul class="filter-category-list">
+            <li>
+              <a href="{% url 'store:shop' %}?{% if in_stock_only %}in_stock=1&{% endif %}{% if organic_only %}organic=1&{% endif %}{% if selected_min %}min_price={{ selected_min }}&{% endif %}{% if selected_max %}max_price={{ selected_max }}&{% endif %}{% if current_sort %}sort={{ current_sort }}&{% endif %}{% if query %}q={{ query }}{% endif %}" class="filter-cat-link {% if not category %}active{% endif %}">
+                <span>All Products</span>
+                <span class="badge-count" style="position: static; width: auto; height: auto; padding: 2px 8px; font-size: 0.75rem; background: var(--gray-100); color: var(--gray-600); border: none;">{{ total_count }}</span>
+              </a>
+            </li>
+            {% for cat in all_categories %}
+              <li>
+                <a href="{{ cat.get_absolute_url }}?{% if in_stock_only %}in_stock=1&{% endif %}{% if organic_only %}organic=1&{% endif %}{% if selected_min %}min_price={{ selected_min }}&{% endif %}{% if selected_max %}max_price={{ selected_max }}&{% endif %}{% if current_sort %}sort={{ current_sort }}&{% endif %}{% if query %}q={{ query }}{% endif %}" class="filter-cat-link {% if category and category.id == cat.id %}active{% endif %}">
+                  <span>{{ cat.name }}</span>
+                  <span class="badge-count" style="position: static; width: auto; height: auto; padding: 2px 8px; font-size: 0.75rem; background: var(--gray-100); color: var(--gray-600); border: none;">{{ cat.products.count }}</span>
+                </a>
+              </li>
+            {% endfor %}
+          </ul>
+        </div>
+
+        <!-- Widget 2: Interactive Price Filter -->
+        <div class="filter-widget">
+          <div class="filter-title" style="display: flex; justify-content: space-between; align-items: center;">
+            <span>Price Range (₹)</span>
+            {% if has_price_filter %}
+              <span class="badge-count" style="position: static; width: auto; height: auto; padding: 2px 8px; font-size: 0.7rem; background: #dcfce7; color: #15803d; border: 1px solid #bbf7d0; font-weight: 800;">Filtered</span>
+            {% endif %}
+          </div>
+
+          <!-- Dual Range Slider -->
+          <div class="price-slider-container">
+            <div class="price-slider-track"></div>
+            <div class="price-slider-range" id="priceSliderRange"></div>
+            <input type="range" id="rangeMin" min="0" max="1500" step="10" value="{{ selected_min|default:'0' }}" aria-label="Minimum Price Range">
+            <input type="range" id="rangeMax" min="0" max="1500" step="10" value="{{ selected_max|default:'1500' }}" aria-label="Maximum Price Range">
+          </div>
+
+          <!-- Numeric Min & Max Inputs -->
+          <div style="display: flex; gap: 0.5rem; align-items: center; margin-top: 0.65rem;">
+            <div style="flex: 1; position: relative;">
+              <span style="position: absolute; left: 0.55rem; top: 50%; transform: translateY(-50%); color: var(--gray-400); font-weight: 700; font-size: 0.82rem;">₹</span>
+              <input type="number" id="inputMinPrice" step="5" min="0" max="1500" name="min_price" value="{{ selected_min }}" placeholder="0" style="width: 100%; padding: 0.45rem 0.4rem 0.45rem 1.35rem; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 700; color: var(--dark);" aria-label="Minimum price in rupees">
+            </div>
+            <span style="color: var(--gray-400); font-weight: 700;">-</span>
+            <div style="flex: 1; position: relative;">
+              <span style="position: absolute; left: 0.55rem; top: 50%; transform: translateY(-50%); color: var(--gray-400); font-weight: 700; font-size: 0.82rem;">₹</span>
+              <input type="number" id="inputMaxPrice" step="5" min="0" max="1500" name="max_price" value="{{ selected_max }}" placeholder="1500" style="width: 100%; padding: 0.45rem 0.4rem 0.45rem 1.35rem; border: 1px solid var(--gray-300); border-radius: var(--radius-sm); font-size: 0.85rem; font-weight: 700; color: var(--dark);" aria-label="Maximum price in rupees">
+            </div>
+          </div>
+
+          <!-- Dedicated Price Action Buttons -->
+          <div style="display: flex; gap: 0.4rem; margin-top: 0.75rem;">
+            <button type="submit" class="btn btn-primary" style="flex: 1; padding: 0.45rem 0.75rem; font-size: 0.82rem; font-weight: 800; border-radius: var(--radius-sm); display: flex; align-items: center; justify-content: center; gap: 0.3rem;">
+              <i class="ri-check-line"></i> Apply Price
+            </button>
+            {% if has_price_filter %}
+              <button type="button" onclick="clearPriceFilter()" class="btn btn-outline" style="padding: 0.45rem 0.65rem; font-size: 0.8rem; border-color: var(--gray-300); color: var(--danger); border-radius: var(--radius-sm);" title="Clear Price Filter">
+                Reset
+              </button>
+            {% endif %}
+          </div>
+
+          <!-- Quick 1-Click Price Filter Chips -->
+          <div style="display: flex; flex-wrap: wrap; gap: 0.35rem; margin-top: 0.75rem;">
+            <button type="button" class="price-chip {% if not has_price_filter %}active{% endif %}" onclick="setQuickPrice('', '')">All</button>
+            <button type="button" class="price-chip {% if selected_min == '0' and selected_max == '100' or not selected_min and selected_max == '100' %}active{% endif %}" onclick="setQuickPrice('0', '100')">&lt; ₹100</button>
+            <button type="button" class="price-chip {% if selected_min == '100' and selected_max == '200' %}active{% endif %}" onclick="setQuickPrice('100', '200')">₹100 - ₹200</button>
+            <button type="button" class="price-chip {% if selected_min == '200' and selected_max == '500' %}active{% endif %}" onclick="setQuickPrice('200', '500')">₹200 - ₹500</button>
+            <button type="button" class="price-chip {% if selected_min == '500' and not selected_max or selected_min == '500' and selected_max == '1500' %}active{% endif %}" onclick="setQuickPrice('500', '1500')">₹500+</button>
+          </div>
+        </div>
+
+        <!-- Widget 3: Quick Preferences -->
+        <div class="filter-widget">
+          <div class="filter-title">
+            <span>Preferences</span>
+          </div>
+          <div style="display: flex; flex-direction: column; gap: 0.6rem; font-size: 0.9rem;">
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="checkbox" name="organic" value="1" {% if organic_only %}checked{% endif %} onchange="document.getElementById('filter-form').submit()">
+              <span>100% Certified Organic</span>
+            </label>
+            <label style="display: flex; align-items: center; gap: 0.5rem; cursor: pointer;">
+              <input type="checkbox" name="in_stock" value="1" {% if in_stock_only %}checked{% endif %} onchange="document.getElementById('filter-form').submit()">
+              <span>In Stock Only</span>
+            </label>
+          </div>
+        </div>
+
+        <!-- Submit Filters -->
+        <button type="submit" class="btn btn-primary" style="width: 100%; padding: 0.65rem 1rem; font-size: 0.9rem; margin-bottom: 0.5rem;">
+          Apply All Filters
+        </button>
+        <a href="{% url 'store:shop' %}" class="btn btn-outline" style="width: 100%; border-color: var(--gray-300); color: var(--dark); padding: 0.5rem 1rem; font-size: 0.85rem; text-align: center; display: block;">
+          Clear All
+        </a>
+      </form>
+    </aside>
+
+    <!-- Main Products Area -->
+    <div>
+      <!-- Topbar with Sort -->
+      <div class="shop-topbar">
+        <div style="font-size: 0.9rem; color: var(--gray-600);">
+          Showing <strong>{{ products|length }}</strong> of <strong>{{ total_count }}</strong> farm items
+          {% if query %} for "<strong>{{ query }}</strong>"{% endif %}
+        </div>
+
+        <div style="display: flex; align-items: center; gap: 0.75rem;">
+          <label for="shop-sort" style="font-size: 0.85rem; color: var(--gray-500); font-weight: 600;">Sort By:</label>
+          <select id="shop-sort" onchange="applySorting(this.value)" style="padding: 0.45rem 1rem; border: 1px solid var(--gray-200); border-radius: var(--radius-sm); font-size: 0.85rem; outline: none; cursor: pointer; background: #fff;">
+            <option value="newest" {% if current_sort == 'newest' %}selected{% endif %}>Newest Harvest</option>
+            <option value="price_low" {% if current_sort == 'price_low' %}selected{% endif %}>Price: Low to High</option>
+            <option value="price_high" {% if current_sort == 'price_high' %}selected{% endif %}>Price: High to Low</option>
+            <option value="rating" {% if current_sort == 'rating' %}selected{% endif %}>Customer Rating</option>
+            <option value="name" {% if current_sort == 'name' %}selected{% endif %}>Alphabetical (A-Z)</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Active Filter Tags (Category / Price / Preferences) -->
+      {% if category or has_price_filter or organic_only or in_stock_only %}
+        <div style="display: flex; align-items: center; gap: 0.5rem; margin-bottom: 1.25rem; flex-wrap: wrap;">
+          <span style="font-size: 0.8rem; color: var(--gray-500); font-weight: 700;">Active Filters:</span>
+          {% if category %}
+            <span style="background: #f1f5f9; color: var(--dark); font-weight: 700; font-size: 0.78rem; padding: 0.25rem 0.75rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid var(--gray-300);">
+              <i class="ri-folder-3-fill" style="color: var(--primary);"></i> {{ category.name }}
+              <a href="{% url 'store:shop' %}?{% if in_stock_only %}in_stock=1&{% endif %}{% if organic_only %}organic=1&{% endif %}{% if selected_min %}min_price={{ selected_min }}&{% endif %}{% if selected_max %}max_price={{ selected_max }}&{% endif %}{% if current_sort %}sort={{ current_sort }}&{% endif %}{% if query %}q={{ query }}{% endif %}" style="color: var(--danger); margin-left: 0.25rem; font-weight: 800; text-decoration: none;" title="Remove category filter">&times;</a>
+            </span>
+          {% endif %}
+          {% if has_price_filter %}
+            <span style="background: #dcfce7; color: #15803d; font-weight: 700; font-size: 0.78rem; padding: 0.25rem 0.75rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid #bbf7d0;">
+              <i class="ri-price-tag-3-fill"></i> Price: ₹{{ selected_min|default:"0" }} - ₹{{ selected_max|default:"1500+" }}
+              <a href="javascript:void(0)" onclick="clearPriceFilter()" style="color: #15803d; margin-left: 0.25rem; font-weight: 800; text-decoration: none;" title="Remove price filter">&times;</a>
+            </span>
+          {% endif %}
+          {% if organic_only %}
+            <span style="background: #ecfdf5; color: #047857; font-weight: 700; font-size: 0.78rem; padding: 0.25rem 0.75rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid #a7f3d0;">
+              <span>🌱 100% Organic</span>
+              <a href="{% if category %}{% url 'store:shop_category' category.slug %}{% else %}{% url 'store:shop' %}{% endif %}?{% if in_stock_only %}in_stock=1&{% endif %}{% if selected_min %}min_price={{ selected_min }}&{% endif %}{% if selected_max %}max_price={{ selected_max }}&{% endif %}{% if current_sort %}sort={{ current_sort }}&{% endif %}{% if query %}q={{ query }}{% endif %}" style="color: #047857; margin-left: 0.25rem; font-weight: 800; text-decoration: none;" title="Remove organic filter">&times;</a>
+            </span>
+          {% endif %}
+          {% if in_stock_only %}
+            <span style="background: #f0f9ff; color: #0369a1; font-weight: 700; font-size: 0.78rem; padding: 0.25rem 0.75rem; border-radius: 9999px; display: inline-flex; align-items: center; gap: 0.4rem; border: 1px solid #bae6fd;">
+              <span>📦 In Stock Only</span>
+              <a href="{% if category %}{% url 'store:shop_category' category.slug %}{% else %}{% url 'store:shop' %}{% endif %}?{% if organic_only %}organic=1&{% endif %}{% if selected_min %}min_price={{ selected_min }}&{% endif %}{% if selected_max %}max_price={{ selected_max }}&{% endif %}{% if current_sort %}sort={{ current_sort }}&{% endif %}{% if query %}q={{ query }}{% endif %}" style="color: #0369a1; margin-left: 0.25rem; font-weight: 800; text-decoration: none;" title="Remove in-stock filter">&times;</a>
+            </span>
+          {% endif %}
+          <a href="{% url 'store:shop' %}" style="font-size: 0.78rem; color: var(--danger); text-decoration: underline; font-weight: 700; margin-left: 0.25rem;">
+            Clear All
+          </a>
+        </div>
+      {% endif %}
+
+      <!-- Products Grid -->
+      <div class="product-grid" style="grid-template-columns: repeat(3, 1fr);">
+        {% for product in products %}
+          <div class="product-card">
+            <div class="product-thumb-wrap">
+              {% if product.badge %}
+                <span class="product-badge {% if 'OFF' in product.badge or 'HOT' in product.badge %}badge-danger{% elif 'ORGANIC' in product.badge %}badge-organic{% else %}badge-amber{% endif %}">
+                  {{ product.badge }}
+                </span>
+              {% endif %}
+
+              <div class="product-card-actions">
+                <button type="button" class="action-btn-circle js-toggle-wishlist {% if product.id in wishlist_ids %}active{% endif %}" data-product-id="{{ product.id }}" title="Wishlist">
+                  <i class="{% if product.id in wishlist_ids %}ri-heart-fill{% else %}ri-heart-line{% endif %}"></i>
+                </button>
+                <button type="button" class="action-btn-circle js-quick-view" data-product-id="{{ product.id }}" title="Quick View">
+                  <i class="ri-eye-line"></i>
+                </button>
+              </div>
+
+              <a href="{{ product.get_absolute_url }}">
+                {% if product.image %}
+                  <img src="{{ product.image.url }}" alt="{{ product.name }}" loading="lazy">
+                {% else %}
+                  <img src="{% static 'images/cat_vegetables.jpg' %}" alt="{{ product.name }}" loading="lazy">
+                {% endif %}
+              </a>
+            </div>
+
+            <div class="product-body">
+              <a href="{{ product.category.get_absolute_url }}" class="product-category-tag">{{ product.category.name }}</a>
+              <h3 class="product-title">
+                <a href="{{ product.get_absolute_url }}">{{ product.name }}</a>
+              </h3>
+
+              <div class="product-rating">
+                <div class="stars">
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-fill"></i>
+                  <i class="ri-star-half-fill"></i>
+                </div>
+                <span class="rating-count">({{ product.reviews_count }})</span>
+              </div>
+
+              <span class="product-unit-badge">{{ product.unit }}</span>
+
+              <div class="product-footer">
+                <div class="product-prices">
+                  <span class="product-price">₹{{ product.price }}</span>
+                  {% if product.old_price %}
+                    <span class="product-old-price">₹{{ product.old_price }}</span>
+                  {% endif %}
+                </div>
+                <button type="button" class="add-cart-btn js-add-to-cart" data-product-id="{{ product.id }}">
+                  <i class="ri-add-line"></i> Add
+                </button>
+              </div>
+            </div>
+          </div>
+        {% empty %}
+          <div style="grid-column: 1 / -1; text-align: center; padding: 4rem 1rem; background: #fff; border-radius: var(--radius-lg); border: 1px solid var(--gray-200);">
+            <div style="font-size: 3.5rem; color: #cbd5e1; margin-bottom: 1rem;"><i class="ri-search-eye-line"></i></div>
+            <h3 style="font-size: 1.35rem; margin-bottom: 0.5rem; color: var(--dark);">No Farm Products Found</h3>
+            {% if has_price_filter %}
+              <p style="color: var(--gray-500); margin-bottom: 1.5rem;">
+                No organic items matched the price range <strong>₹{{ selected_min|default:'0' }} - ₹{{ selected_max|default:'1500' }}</strong>.
+              </p>
+              <button type="button" onclick="clearPriceFilter()" class="btn btn-primary" style="margin-right: 0.5rem;">
+                <i class="ri-restart-line"></i> Reset Price Range
+              </button>
+            {% else %}
+              <p style="color: var(--gray-500); margin-bottom: 1.5rem;">Try adjusting your search criteria or price filters.</p>
+            {% endif %}
+            <a href="{% url 'store:shop' %}" class="btn btn-outline" style="border-color: var(--gray-300); color: var(--dark);">Reset All Filters</a>
+          </div>
+        {% endfor %}
+      </div>
+
+      <!-- Pagination -->
+      {% if products.has_other_pages %}
+        <div style="display: flex; justify-content: center; gap: 0.5rem; margin-top: 3rem;">
+          {% if products.has_previous %}
+            <a href="?page={{ products.previous_page_number }}{% if query %}&q={{ query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if selected_min %}&min_price={{ selected_min }}{% endif %}{% if selected_max %}&max_price={{ selected_max }}{% endif %}{% if organic_only %}&organic=1{% endif %}{% if in_stock_only %}&in_stock=1{% endif %}" class="btn btn-outline" style="border-color: var(--gray-300); color: var(--dark); padding: 0.5rem 1rem;">
+              <i class="ri-arrow-left-s-line"></i> Prev
+            </a>
+          {% endif %}
+
+          {% for num in products.paginator.page_range %}
+            <a href="?page={{ num }}{% if query %}&q={{ query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if selected_min %}&min_price={{ selected_min }}{% endif %}{% if selected_max %}&max_price={{ selected_max }}{% endif %}{% if organic_only %}&organic=1{% endif %}{% if in_stock_only %}&in_stock=1{% endif %}" class="btn {% if products.number == num %}btn-primary{% else %}btn-outline{% endif %}" style="padding: 0.5rem 1rem; {% if products.number != num %}border-color: var(--gray-300); color: var(--dark);{% endif %}">
+              {{ num }}
+            </a>
+          {% endfor %}
+
+          {% if products.has_next %}
+            <a href="?page={{ products.next_page_number }}{% if query %}&q={{ query }}{% endif %}{% if current_sort %}&sort={{ current_sort }}{% endif %}{% if selected_min %}&min_price={{ selected_min }}{% endif %}{% if selected_max %}&max_price={{ selected_max }}{% endif %}{% if organic_only %}&organic=1{% endif %}{% if in_stock_only %}&in_stock=1{% endif %}" class="btn btn-outline" style="border-color: var(--gray-300); color: var(--dark); padding: 0.5rem 1rem;">
+              Next <i class="ri-arrow-right-s-line"></i>
+            </a>
+          {% endif %}
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+function applySorting(sortVal) {
+  const url = new URL(window.location.href);
+  url.searchParams.set('sort', sortVal);
+  url.searchParams.delete('page');
+  window.location.href = url.toString();
+}
+
+function setQuickPrice(min, max) {
+  const minInput = document.getElementById('inputMinPrice');
+  const maxInput = document.getElementById('inputMaxPrice');
+  if (minInput && maxInput) {
+    minInput.value = min;
+    maxInput.value = max;
+    document.getElementById('filter-form').submit();
+  }
+}
+
+function clearPriceFilter() {
+  const minInput = document.getElementById('inputMinPrice');
+  const maxInput = document.getElementById('inputMaxPrice');
+  if (minInput && maxInput) {
+    minInput.value = '';
+    maxInput.value = '';
+    document.getElementById('filter-form').submit();
+  }
+}
+
+// Interactive Dual Slider Synchronization
+document.addEventListener('DOMContentLoaded', function() {
+  const rangeMin = document.getElementById('rangeMin');
+  const rangeMax = document.getElementById('rangeMax');
+  const inputMin = document.getElementById('inputMinPrice');
+  const inputMax = document.getElementById('inputMaxPrice');
+  const sliderRange = document.getElementById('priceSliderRange');
+
+  if (!rangeMin || !rangeMax || !sliderRange) return;
+
+  const minBound = 0;
+  const maxBound = 1500;
+
+  function updateSliderFill() {
+    let val1 = parseInt(rangeMin.value, 10) || minBound;
+    let val2 = parseInt(rangeMax.value, 10) || maxBound;
+
+    if (val1 > val2) {
+      const tmp = val1;
+      val1 = val2;
+      val2 = tmp;
+    }
+
+    const p1 = Math.max(0, Math.min(100, ((val1 - minBound) / (maxBound - minBound)) * 100));
+    const p2 = Math.max(0, Math.min(100, ((val2 - minBound) / (maxBound - minBound)) * 100));
+
+    sliderRange.style.left = p1 + '%';
+    sliderRange.style.width = (p2 - p1) + '%';
+  }
+
+  rangeMin.addEventListener('input', function() {
+    let v1 = parseInt(rangeMin.value, 10);
+    let v2 = parseInt(rangeMax.value, 10);
+    if (v1 > v2) {
+      rangeMin.value = v2;
+      v1 = v2;
+    }
+    if (inputMin) inputMin.value = v1;
+    updateSliderFill();
+  });
+
+  rangeMax.addEventListener('input', function() {
+    let v1 = parseInt(rangeMin.value, 10);
+    let v2 = parseInt(rangeMax.value, 10);
+    if (v2 < v1) {
+      rangeMax.value = v1;
+      v2 = v1;
+    }
+    if (inputMax) inputMax.value = v2;
+    updateSliderFill();
+  });
+
+  if (inputMin) {
+    inputMin.addEventListener('change', function() {
+      let v = parseInt(inputMin.value, 10);
+      if (!isNaN(v)) {
+        rangeMin.value = Math.max(minBound, Math.min(v, maxBound));
+        updateSliderFill();
+      }
+    });
+  }
+
+  if (inputMax) {
+    inputMax.addEventListener('change', function() {
+      let v = parseInt(inputMax.value, 10);
+      if (!isNaN(v)) {
+        rangeMax.value = Math.max(minBound, Math.min(v, maxBound));
+        updateSliderFill();
+      }
+    });
+  }
+
+  updateSliderFill();
+});
+</script>
+{% endblock %}
